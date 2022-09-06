@@ -1,0 +1,2 @@
+yes | make etilgrmhdgcc94-config options=lemhi-gcc94.cfg
+cp ThornList configs/etilgrmhdgcc94
