@@ -1,0 +1,3 @@
+yes | make etilgrmhdgcc-config options=ubuntu-gcc.cfg
+
+cp ThornList configs/etilgrmhdgcc
