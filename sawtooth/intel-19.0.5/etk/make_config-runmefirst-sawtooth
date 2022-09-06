@@ -1,0 +1,4 @@
+yes | make intel19-config options=sawtooth-intel19.cfg
+#cp ThornList_OpenBLAS configs/etilgrmhdgcc92/ThornList
+#cp ThornList configs/etilgrmhdgcc92/ThornList
+cp ThornList configs/intel19/ThornList
