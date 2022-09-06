@@ -1,0 +1,2 @@
+yes | make etilgrmhdgcc84-config options=sawtooth-gcc84.cfg
+cp ThornList configs/etilgrmhdgcc84
