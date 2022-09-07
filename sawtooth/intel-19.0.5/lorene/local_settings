@@ -21,7 +21,7 @@ CXXFLAGS = -O2 -qopenmp -traceback -debug all -xCORE-AVX512 -align -std=gnu++11 
 
 # Options for the C++ compiler to produce the library for debugging:
 # -----------------------------------------------------------------
-CXXFLAGS_G = -g -qopenmp -traceback -debug all -xCORE-AVX512 -align -std=gnu++11
+CXXFLAGS_G = -g -O2 -qopenmp -traceback -debug all -xCORE-AVX512 -align -std=gnu++11
 
 # Path for the include files:
 # --------------------------
@@ -43,7 +43,7 @@ F77FLAGS = -O2 -qopenmp -traceback -debug all -xCORE-AVX512 -align -pad -safe-cr
 
 # Options for the Fortran 77 compiler to produce the library for debugging:
 # ------------------------------------------------------------------------
-F77FLAGS_G = -O2 -qopenmp -traceback -debug all -xCORE-AVX512 -align -pad -safe-cray-ptr \
+F77FLAGS_G = -g -O2 -qopenmp -traceback -debug all -xCORE-AVX512 -align -pad -safe-cray-ptr \
              -check bounds -check format -extend-source 132
 
 #===============================#
@@ -73,7 +73,6 @@ ifeq ($(FFT_DIR),FFTW3)
 LIB_CXX = -L/apps/local/spack/software/gcc-9.2.0/intel-19.0.5-kl4pad7bcohde3i6l2foj6d22kwcexgd/compilers_and_libraries/linux/mkl/lib/intel64 -mkl
 else
 LIB_CXX =
-#-lgfortran -lstdc++ -lm
 endif
 
 # Linear Algebra Package (LAPACK) library
