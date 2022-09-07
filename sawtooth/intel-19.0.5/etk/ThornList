@@ -135,19 +135,19 @@ CactusElliptic/TATelliptic
 !URL      = https://bitbucket.org/cactuscode/cactusexamples.git
 !REPO_PATH= $2
 !CHECKOUT = CactusExamples/HelloWorldCUDA CactusExamples/HelloWorldOpenCL CactusExamples/WaveToyOpenCL
-CactusExamples/DemoInterp
-CactusExamples/FleshInfo
-CactusExamples/HelloWorld
-#DISABLED CactusExamples/HelloWorldCUDA
-#DISABLED CactusExamples/HelloWorldOpenCL
-CactusExamples/IDWaveMoL
-CactusExamples/Poisson
-CactusExamples/SampleBoundary
-CactusExamples/SampleIO
-CactusExamples/TimerInfo
-CactusExamples/WaveMoL
-CactusExamples/WaveToy1DF77
-CactusExamples/WaveToy2DF77
+# CactusExamples/DemoInterp
+# CactusExamples/FleshInfo
+# CactusExamples/HelloWorld
+# #DISABLED CactusExamples/HelloWorldCUDA
+# #DISABLED CactusExamples/HelloWorldOpenCL
+# CactusExamples/IDWaveMoL
+# CactusExamples/Poisson
+# CactusExamples/SampleBoundary
+# CactusExamples/SampleIO
+# CactusExamples/TimerInfo
+# CactusExamples/WaveMoL
+# CactusExamples/WaveToy1DF77
+# CactusExamples/WaveToy2DF77
 #DISABLED CactusExamples/WaveToyOpenCL
 
 # CactusIO thorns
@@ -178,13 +178,13 @@ CactusNumerical/ReflectionSymmetry
 CactusNumerical/RotatingSymmetry180
 CactusNumerical/RotatingSymmetry90
 CactusNumerical/Slab
-CactusNumerical/SlabTest
+#CactusNumerical/SlabTest
 CactusNumerical/SpaceMask
 CactusNumerical/SphericalSurface
 CactusNumerical/SummationByParts
 CactusNumerical/TensorTypes
-CactusNumerical/TestLocalInterp2
-CactusNumerical/TestLocalReduce
+#CactusNumerical/TestLocalInterp2
+#CactusNumerical/TestLocalReduce
 
 # CactusPUGH thorns
 !TARGET   = $ARR
@@ -213,27 +213,27 @@ CactusPUGHIO/IOHDF5Util
 !REPO_PATH= $2
 !CHECKOUT = CactusTest/TestAllTypes
 #DISABLED CactusTest/TestAllTypes
-CactusTest/TestArrays
-CactusTest/TestComplex
-CactusTest/TestCoordinates
-CactusTest/TestFortranCrayPointers
-CactusTest/TestFortranDependencies1
-CactusTest/TestFortranDependencies2
-CactusTest/TestFpointerNULL
-CactusTest/TestFreeF90
-CactusTest/TestGlobalReduce
-CactusTest/TestInclude1
-CactusTest/TestInclude2
-CactusTest/TestLoop
-CactusTest/TestMath
-CactusTest/TestMoL
-CactusTest/TestPar
-CactusTest/TestReduce
-CactusTest/TestSchedule
-CactusTest/TestStrings
-CactusTest/TestTable
-CactusTest/TestTimers
-CactusTest/TestTypes
+#CactusTest/TestArrays
+#CactusTest/TestComplex
+#CactusTest/TestCoordinates
+#CactusTest/TestFortranCrayPointers
+#CactusTest/TestFortranDependencies1
+#CactusTest/TestFortranDependencies2
+#CactusTest/TestFpointerNULL
+#CactusTest/TestFreeF90
+#CactusTest/TestGlobalReduce
+#CactusTest/TestInclude1
+#CactusTest/TestInclude2
+#CactusTest/TestLoop
+#CactusTest/TestMath
+#CactusTest/TestMoL
+#CactusTest/TestPar
+#CactusTest/TestReduce
+#CactusTest/TestSchedule
+#CactusTest/TestStrings
+#CactusTest/TestTable
+#CactusTest/TestTimers
+#CactusTest/TestTypes
 
 # CactusUtils thorns
 !TARGET   = $ARR
@@ -340,7 +340,7 @@ EinsteinEvolve/NewRad
 !CHECKOUT =
 #EinsteinInitialData/DistortedBHIVP
 #EinsteinInitialData/Exact
-EinsteinInitialData/Hydro_InitExcision
+#EinsteinInitialData/Hydro_InitExcision
 #EinsteinInitialData/Hydro_RNSID
 #EinsteinInitialData/IDAnalyticBH
 #EinsteinInitialData/IDAxiBrillBH
@@ -378,29 +378,29 @@ Carpet/CarpetIOASCII
 Carpet/CarpetIOBasic
 Carpet/CarpetIOHDF5
 Carpet/CarpetIOScalar
-Carpet/CarpetIntegrateTest
+#Carpet/CarpetIntegrateTest
 Carpet/CarpetInterp
 Carpet/CarpetInterp2
 Carpet/CarpetLib
 Carpet/CarpetMask
-Carpet/CarpetProlongateTest
+#Carpet/CarpetProlongateTest
 Carpet/CarpetReduce
 Carpet/CarpetRegrid
 Carpet/CarpetRegrid2
-Carpet/CarpetRegridTest
+#Carpet/CarpetRegridTest
 Carpet/CarpetSlab
 Carpet/CarpetTracker
 Carpet/CycleClock
-Carpet/HighOrderWaveTest
+#Carpet/HighOrderWaveTest
 Carpet/LoopControl
 Carpet/PeriodicCarpet
 
 #Carpet/ReductionTest
-Carpet/ReductionTest2
-Carpet/ReductionTest3
-Carpet/RegridSyncTest
-Carpet/TestCarpetGridInfo
-Carpet/TestLoopControl
+#Carpet/ReductionTest2
+#Carpet/ReductionTest3
+#Carpet/RegridSyncTest
+#Carpet/TestCarpetGridInfo
+#Carpet/TestLoopControl
 Carpet/Timers
 
 
@@ -421,7 +421,7 @@ Lean/LeanBSSNMoL
 !URL      = https://github.com/barrywardell/EinsteinExact.git
 !REPO_PATH= $2
 !CHECKOUT = EinsteinExact/doc EinsteinExact/m EinsteinExact/tests
-EinsteinExact/EinsteinExact_Test
+#EinsteinExact/EinsteinExact_Test
 EinsteinExact/GaugeWave
 EinsteinExact/KerrSchild
 EinsteinExact/Minkowski
@@ -481,13 +481,13 @@ McLachlan/ML_ADMConstraints
 McLachlan/ML_ADMQuantities
 McLachlan/ML_BSSN
 McLachlan/ML_BSSN_Helper
-McLachlan/ML_BSSN_Test
+#McLachlan/ML_BSSN_Test
 McLachlan/ML_CCZ4
 McLachlan/ML_CCZ4_Helper
-McLachlan/ML_CCZ4_Test
-McLachlan/ML_WaveToy
+#McLachlan/ML_CCZ4_Test
+#McLachlan/ML_WaveToy
 #DISABLED McLachlan/ML_WaveToy_CL
-McLachlan/ML_WaveToy_Test
+#McLachlan/ML_WaveToy_Test
 
 
 
@@ -540,7 +540,7 @@ WVUThorns/Baikal
 WVUThorns/BaikalVacuum
 #WVUThorns/interp_arbgrid_MO_ETK
 WVUThorns/FishboneMoncriefID
-WVUThorns/NRPyEllipticET
+#WVUThorns/NRPyEllipticET
 #WVUThorns/NRPyPlusTOVID
 #WVUThorns/WVU_EOS
 #WVUThorns/ID_TabEOS_HydroQuantities
@@ -576,13 +576,13 @@ WVUThorns_Diagnostics/VolumeIntegrals_vacuum
 !REPO_PATH= $2
 !REPO_BRANCH = master
 !CHECKOUT =
-Llama/ADMDerivatives
-Llama/Coordinates
-Llama/CoordinatesSymmetry
-Llama/GlobalDerivative
-Llama/Interpolate2
-Llama/LlamaWaveToy
-Llama/WaveExtractL
+# Llama/ADMDerivatives
+# Llama/Coordinates
+# Llama/CoordinatesSymmetry
+# Llama/GlobalDerivative
+# Llama/Interpolate2
+# Llama/LlamaWaveToy
+# Llama/WaveExtractL
 
 # Private thorns
 !TARGET   = $ARR
