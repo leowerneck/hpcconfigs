@@ -73,7 +73,7 @@ ifeq ($(FFT_DIR),FFTW3)
 LIB_CXX = -L/opt/apps/intel18/impi18_0/fftw3/3.3.8/lib -lfftw3 \
           -L/opt/intel/compilers_and_libraries_2018.5.274/linux/mkl/lib/intel64 -lifcore -lirc_s
 else
-LIB_CXX = 
+LIB_CXX =
 endif
 
 # Linear Algebra Package (LAPACK) library
@@ -84,7 +84,6 @@ LIB_LAPACK = -L/opt/intel/compilers_and_libraries_2018.5.274/linux/mkl/lib/intel
 # Graphical libraries: PGPLOT and X11
 # -----------------------------------
 LIB_PGPLOT = -L/usr/lib64 -lX11
-#-L/home1/06931/werneck/Cactus/pgplot -lcpgplot -lpgplot
 
 # GNU scientific library
 # -----------------------------------
