@@ -17,11 +17,11 @@ CXX = icpc
 
 # Options for the C++ compiler to produce the optimized library:
 # -------------------------------------------------------------
-CXXFLAGS = -O2 -qopenmp -traceback -debug all -xCORE-AVX512 -align -std=gnu++11 -DNDEBUG
+CXXFLAGS = -O2 -qopenmp -traceback -debug all -xCORE-AVX512 -align -std=gnu++14 -DNDEBUG
 
 # Options for the C++ compiler to produce the library for debugging:
 # -----------------------------------------------------------------
-CXXFLAGS_G = -g -O2 -qopenmp -traceback -debug all -xCORE-AVX512 -align -std=gnu++11
+CXXFLAGS_G = -g -O2 -qopenmp -traceback -debug all -xCORE-AVX512 -align -std=gnu++14
 
 # Path for the include files:
 # --------------------------
