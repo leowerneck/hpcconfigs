@@ -1,0 +1,21 @@
+#!/bin/sh
+# globus_personal_endpoint_setup - download and setup globus on any personal machine
+
+# These instructions were based on the following guide:
+# https://docs.globus.org/how-to/globus-connect-personal-linux/
+# and should work on Ubuntu, Linux Mint, and Debian. See website
+# for other Linux flavors.
+# For Mac OS , see: https://docs.globus.org/how-to/globus-connect-personal-mac/
+# For Windows, see: https://docs.globus.org/how-to/globus-connect-personal-windows/
+
+# Step 1: Download globus
+wget https://downloads.globus.org/globus-connect-personal/linux/stable/globusconnectpersonal-latest.tgz
+
+# Step 2: Untar globus
+mkdir globusconnectpersonal-latest && tar zvxf globusconnectpersonal-latest.tgz -C globusconnectpersonal-latest --strip-components 1
+
+# Step 3: Go inside the globus directory
+cd globusconnectpersonal-latest
+
+# Step 4: Run the setup
+./globusconnectpersonal -setup && echo "All done! Now run `./globusconnect -start &` to start your endpoint (you might want to do it in a screen session)" || echo "Oh-oh, it appears that the setup failed. Please try again using `./globusconnectpersonal -setup`."
