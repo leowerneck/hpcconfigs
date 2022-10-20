@@ -81,7 +81,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(tramp monokai-theme sed-mode auctex markdown-mode)))
+ '(package-selected-packages
+   '(csv-mode tramp monokai-theme sed-mode auctex markdown-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -108,3 +109,13 @@
 
 ;; Use Ctrl-/ to comment line
 (global-set-key (kbd "C-/") 'comment-line)
+
+;; Spell checking in text mode
+(dolist (hook '(text-mode-hook))
+  (add-hook hook (lambda () (flyspell-mode 1))))
+
+;; Right-click spell fix (Mac OS)
+(eval-after-load "flyspell"
+  '(progn
+     (define-key flyspell-mouse-map [down-mouse-3] #'flyspell-correct-word)
+     (define-key flyspell-mouse-map [mouse-3] #'undefined)))
