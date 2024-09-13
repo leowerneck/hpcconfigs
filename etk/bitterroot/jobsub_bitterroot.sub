@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Bitterroot nodes seem to have 56 cores / socket and 2 sockets / node.
+
+#SBATCH --job-name grh-tab
+#SBATCH --nodes 16
+#SBATCH --ntasks 256
+#SBATCH --time 48:00:00
+#SBATCH --ntasks-per-node 16
+#SBATCH --ntasks-per-socket 8
+#SBATCH --cpus-per-task 7
+#SBATCH --wckey edu_res
+
+module purge
+module load gcc/13.3.0-gcc-10.5.0-bync openmpi/5.0.5-gcc-13.3.0-lx62 hdf5/1.14.4-3-gcc-13.3.0-ompi5-3xgg
+module list
+
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+export CACTUS_NUM_THREADS=$OMP_NUM_THREADS
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/ui_umbc/bitterroot/gsl-2.8/lib:/projects/ui_umbc/bitterroot/fftw-3.3.10/lib:/apps/spack/opt/gcc-13.3.0/hwloc-2.9.3-uziwbe4kgbyyj7m4zwmrliqzi6kssn2x/lib
+
+mpirun -n $SLURM_NTASKS -x $SLURM_CPUS_PER_TASK --map-by ppr:$SLURM_NTASKS_PER_SOCKET:package:pe=$SLURM_CPUS_PER_TASK -x LD_LIBRARY_PATH ./cactus_sim -reo bns.par | tee CCTK_Proc0.out
