@@ -16,7 +16,7 @@ From: layer1_os.sif
 
     # Download the Einstein Toolkit using the shortened bns.th thornlist
     # Note: The path to bns.th is now in the root of the container
-    ./GetComponents --noshallow /input_thornlist.th --root /Cactus_bns
+    ./GetComponents --noshallow /input_thornlist.th --root /Cactus
 
     # Now build the Einstein Toolkit.
     cd /Cactus
@@ -32,9 +32,8 @@ From: layer1_os.sif
     rm -rf Cactus
 
 %runscript
-    # This script runs when you execute the container (e.g., ./etk_final.sif)
+    # This script runs when you execute the container (e.g., ./et_<parfile>.sif)
     echo "Einstein Toolkit container ready."
-    echo "The compiled toolkit is located in /Cactus_bns."
     echo "Starting a bash shell."
     echo ""
     # Execute a shell, passing along any command-line arguments
