@@ -1,0 +1,46 @@
+# File: layer2_et.def
+Bootstrap: localimage
+From: layer1_os.sif
+
+%help
+    This container holds a compiled installation of the Einstein Toolkit.
+    It was built using the bns.th thornlist.
+    To use, start an interactive shell with: apptainer shell <image_name>.sif
+
+%files
+    # The bns.th file is part of the application build, so we copy it.
+    bns.th /
+
+%post
+    # Move to a known directory
+    cd /
+
+    # Download GetComponents using instructions from einsteintoolkit.org
+    curl -kLO "https://raw.githubusercontent.com/gridaphobe/CRL/ET_2025_05/GetComponents"
+    chmod a+x GetComponents
+
+    # Download the Einstein Toolkit using the shortened bns.th thornlist
+    # Note: The path to bns.th is now in the root of the container
+    ./GetComponents --noshallow /bns.th --root /Cactus_bns
+
+    # Now build the Einstein Toolkit.
+    cd /Cactus_bns
+    yes | make sim-config
+    cp thornlists/bns.th configs/sim/ThornList
+    make -j16
+
+    # Copy the executable
+    cp exe/cactus_sim /
+
+    # Clean up
+    cd /
+    rm -rf Cactus_bns
+
+%runscript
+    # This script runs when you execute the container (e.g., ./etk_final.sif)
+    echo "Einstein Toolkit container ready."
+    echo "The compiled toolkit is located in /Cactus_bns."
+    echo "Starting a bash shell."
+    echo ""
+    # Execute a shell, passing along any command-line arguments
+    exec /bin/bash "$@"

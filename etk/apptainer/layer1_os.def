@@ -1,0 +1,55 @@
+# File: layer1_os.def
+Bootstrap: docker
+From: ubuntu:24.04
+
+%help
+    This is a base image for scientific computing.
+    It includes Ubuntu 24.04 with common compilers, libraries
+    (MPI, HDF5, FFTW3, etc.), and a configured UTF-8 locale.
+
+%post
+    # Prevent interactive prompts during installation
+    export DEBIAN_FRONTEND=noninteractive
+
+    # Install all required system-level dependencies
+    apt-get update && apt-get install -y --no-install-recommends \
+        gcc \
+        g++ \
+        git \
+        gfortran \
+        numactl \
+        python3 \
+        python-is-python3 \
+        python3-pip \
+        locales \
+        cmake \
+        make \
+        rsync \
+        curl \
+        patch \
+        pkg-config \
+        libopenmpi-dev \
+        libhdf5-openmpi-dev \
+        libfftw3-dev \
+        libssl-dev \
+        liblapack-dev \
+        libhwloc-dev \
+        libudev-dev \
+        libgsl-dev \
+        libpapi-dev \
+        libjpeg-dev \
+        libyaml-cpp-dev && \
+    # Clean up apt cache to reduce image size
+    rm -rf /var/lib/apt/lists/*
+
+    # --- Locale Generation ---
+    # Generate and configure the en_US.UTF-8 locale
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+    locale-gen
+    update-locale LANG=en_US.UTF-8
+
+%environment
+    # Set the locale environment for any container that uses this as a base
+    export LANGUAGE=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
