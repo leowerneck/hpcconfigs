@@ -6,6 +6,9 @@ From: layer1_os.sif
     This container holds a compiled installation of the Einstein Toolkit.
     To use, start an interactive shell with: apptainer shell <image_name>.sif
 
+%setup
+    touch ${SINGULARITY_ROOTFS}/input_thornlist.th
+
 %post
     # Move to a known directory
     cd /
@@ -33,8 +36,5 @@ From: layer1_os.sif
 
 %runscript
     # This script runs when you execute the container (e.g., ./et_<parfile>.sif)
-    echo "Einstein Toolkit container ready."
-    echo "Starting a bash shell."
-    echo ""
-    # Execute a shell, passing along any command-line arguments
-    exec /bin/bash "$@"
+    echo "Einstein Toolkit container ready. Running the Einstein Toolkit."
+    /et_exe "$@"

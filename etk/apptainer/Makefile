@@ -11,6 +11,9 @@ ET_INPUT := layer2_et.def
 OS_IMAGE := layer1_os.sif
 ET_IMAGE := et_$(basename $(THORNLIST)).sif
 
+# Get full path to thornlist
+THORNLIST_FULLPATH := $(shell realpath $(THORNLIST))
+
 # Default target: build the final image
 all: $(ET_IMAGE)
 
@@ -18,9 +21,9 @@ all: $(ET_IMAGE)
 # This depends on the ET definition file, the OS base image, and the thornlist
 $(ET_IMAGE): $(OS_INPUT) $(OS_IMAGE) $(ET_INPUT) $(THORNLIST)
 	@echo "--- Building Final Einstein Toolkit Image ---"
-	@echo "    >>> Using thornlist: $(THORNLIST)"
+	@echo "    >>> Using thornlist: $(THORNLIST_FULLPATH)"
 	apptainer build --force \
-		--bind $(shell realpath $(THORNLIST)):/input_thornlist.th \
+		--bind $(THORNLIST_FULLPATH):/input_thornlist.th \
 		$(ET_IMAGE) $(ET_INPUT)
 
 # Rule to build the OS base image
@@ -32,6 +35,6 @@ $(OS_IMAGE): $(OS_INPUT)
 # Rule to clean up generated images
 clean:
 	@echo "--- Cleaning up generated images ---"
-	rm -f $(OS_IMAGE) $(ET_IMAGE)
+	rm -f $(OS_IMAGE) et_*.sif
 
 .PHONY: all clean
