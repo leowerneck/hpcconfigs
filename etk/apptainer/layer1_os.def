@@ -3,9 +3,15 @@ Bootstrap: docker
 From: ubuntu:24.04
 
 %help
+    Einstein Toolkit Container --- Layer 1/3 --- Operating System
     This is a base image for scientific computing.
     It includes Ubuntu 24.04 with common compilers, libraries
     (MPI, HDF5, FFTW3, etc.), and a configured UTF-8 locale.
+
+%labels
+    Version 1.0
+    Author(s):
+        Leo Werneck <wernecklr@gmail.com>
 
 %post
     # Prevent interactive prompts during installation
@@ -38,7 +44,8 @@ From: ubuntu:24.04
         libgsl-dev \
         libpapi-dev \
         libjpeg-dev \
-        libyaml-cpp-dev && \
+        libyaml-cpp-dev
+
     # Clean up apt cache to reduce image size
     rm -rf /var/lib/apt/lists/*
 

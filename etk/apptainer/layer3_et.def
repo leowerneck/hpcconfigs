@@ -1,10 +1,18 @@
-# File: layer2_et.def
+# File: layer3_et.def
 Bootstrap: localimage
-From: layer1_os.sif
+From: layer2_lorene.sif
 
 %help
-    This container holds a compiled installation of the Einstein Toolkit.
-    To use, start an interactive shell with: apptainer shell <image_name>.sif
+    Einstein Toolkit Container --- Layer 3/3 --- Einstein Toolkit
+    This layer downloads and compiles the Einstein Toolkit, producing the
+    executable /et_exe.
+    The generated image can be used as an Einstein Toolkit executable,
+    e.g., ./et_bns.sif <options>.
+
+%labels
+    Version 1.0
+    Author(s):
+        Leo Werneck <wernecklr@gmail.com>
 
 %setup
     touch ${SINGULARITY_ROOTFS}/input_thornlist.th

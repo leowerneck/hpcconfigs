@@ -1,0 +1,45 @@
+# File: layer2_lorene.def
+Bootstrap: localimage
+From: layer1_os.sif
+
+%help
+    Einstein Toolkit Container --- Layer 2/3 --- LORENE
+    This layer downloads, compiles, and installs LORENE in /Lorene.
+    It also exports the HOME_LORENE and LORENE_DIR environment variables.
+
+%labels
+    Version 1.0
+    Author(s):
+        Leo Werneck <wernecklr@gmail.com>
+
+%post
+    export HOME_LORENE=/Lorene
+
+    git clone https://github.com/leowerneck/Lorene.git $HOME_LORENE
+    cd $HOME_LORENE
+
+    echo '# Lorene configuration
+CXX        = g++
+F77        = gfortran
+CXXFLAGS   = -O2 -fopenmp -march=native -std=c++17 -rdynamic -DNDEBUG
+CXXFLAGS_G = -O2 -fopenmp -march=native -std=c++17 -rdynamic
+F77FLAGS   = -O2 -fopenmp -march=native -fcray-pointer -ffixed-line-length-none -fno-range-check -DNDEBUG
+F77FLAGS_G = -O2 -fopenmp -march=native -fcray-pointer -ffixed-line-length-none -fno-range-check
+INC        = -I$(HOME_LORENE)/C++/Include -I$(HOME_LORENE)/C++/Include_extra
+RANLIB     = ls
+MAKEDEPEND = : > \$(df).d
+DEPDIR     = .deps
+FFT_DIR    = FFTW3
+LIB_CXX    = -L/usr/local/lib -lfftw3 -lgfortran -lstdc++ -lm
+LIB_LAPACK = -L/usr/local/lib -llapack -lblas
+LIB_GSL    = -lgsl -lgslcblas
+LIB_PGPLOT =
+' > local_settings
+
+    make fortran
+    make export -j8
+    make cpp -j8
+
+%environment
+    export HOME_LORENE=/Lorene
+    export LORENE_DIR=/Lorene
