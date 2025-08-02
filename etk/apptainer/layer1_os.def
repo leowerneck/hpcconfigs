@@ -9,9 +9,8 @@ From: ubuntu:24.04
     (MPI, HDF5, FFTW3, etc.), and a configured UTF-8 locale.
 
 %labels
-    Version 1.0
-    Author(s):
-        Leo Werneck <wernecklr@gmail.com>
+    Author(s)  Leo Werneck <wernecklr@gmail.com>
+    Version    1.0
 
 %post
     # Prevent interactive prompts during installation
@@ -19,32 +18,28 @@ From: ubuntu:24.04
 
     # Install all required system-level dependencies
     apt-get update && apt-get install -y --no-install-recommends \
-        gcc \
-        g++ \
-        git \
-        gfortran \
-        numactl \
-        python3 \
+        gcc               \
+        g++               \
+        git               \
+        gfortran          \
+        numactl           \
+        perl              \
+        python3           \
         python-is-python3 \
-        python3-pip \
-        locales \
-        cmake \
-        make \
-        rsync \
-        curl \
-        patch \
-        pkg-config \
-        libopenmpi-dev \
-        libhdf5-openmpi-dev \
-        libfftw3-dev \
-        libssl-dev \
-        liblapack-dev \
-        libhwloc-dev \
-        libudev-dev \
-        libgsl-dev \
-        libpapi-dev \
-        libjpeg-dev \
-        libyaml-cpp-dev
+        python3-pip       \
+        locales           \
+        cmake             \
+        make              \
+        rsync             \
+        curl              \
+        pkg-config        \
+        libyaml-cpp-dev   \
+        rdma-core         \
+        libibverbs-dev    \
+        librdmacm-dev     \
+        ibverbs-providers \
+        libnl-3-dev       \
+        libnl-route-3-dev 
 
     # Clean up apt cache to reduce image size
     rm -rf /var/lib/apt/lists/*

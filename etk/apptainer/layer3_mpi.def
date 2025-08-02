@@ -1,0 +1,29 @@
+# File: layer3_mpi.def
+Bootstrap: localimage
+From: layer2_ucx.sif
+
+%help
+    Einstein Toolkit Container --- Layer 2/3 --- MPI
+
+%labels
+    Author(s) Leo Werneck <wernecklr@gmail.com>
+    Version   1.0
+
+%post
+    OMPI_MAJOR_VER=4.1
+    OMPI_MINOR_VER=6
+    OMPI_VER=${OMPI_MAJOR_VER}.${OMPI_MINOR_VER}
+
+    set -e
+
+    cd /
+    curl -OL https://download.open-mpi.org/release/open-mpi/v${OMPI_MAJOR_VER}/openmpi-${OMPI_VER}.tar.gz
+    tar xzvf openmpi-${OMPI_VER}.tar.gz
+    cd openmpi-${OMPI_VER}
+
+    ./configure --prefix=/opt/openmpi-${OMPI_VER} --with-ucx=/opt/ucx --with-verbs
+    make -j8 && make install
+
+    ln -s /opt/openmpi-${OMPI_VER} /opt/openmpi
+
+    cd / && rm -rf openmpi-${OMPI_VER} openmpi-${OMPI_VER}.tar.gz

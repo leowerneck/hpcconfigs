@@ -1,0 +1,32 @@
+# File: layer2_ucx.def
+Bootstrap: localimage
+From: layer1_os.sif
+
+%help
+    Einstein Toolkit Container --- Layer 2/3 --- UCX
+
+%labels
+    Author(s) Leo Werneck <wernecklr@gmail.com>
+    Version   1.0
+
+%post
+    UCX_VER=1.15.0
+
+    set -e
+
+    cd /
+    curl -OL https://github.com/openucx/ucx/releases/download/v${UCX_VER}/ucx-${UCX_VER}.tar.gz
+    tar xzvf ucx-${UCX_VER}.tar.gz
+    cd ucx-${UCX_VER}
+
+    ./configure --prefix=/opt/ucx-${UCX_VER} \
+                --enable-mt                  \
+                --with-verbs                 \
+                --with-rc                    \
+                --with-dc                    \
+                --enable-optimizations
+    make -j8 && make install
+
+    ln -s /opt/ucx-${UCX_VER} /opt/ucx
+
+    cd / && rm -rf ucx-${UCX_VER} ucx-${UCX_VER}.tar.gz

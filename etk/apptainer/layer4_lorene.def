@@ -1,16 +1,15 @@
 # File: layer2_lorene.def
 Bootstrap: localimage
-From: layer1_os.sif
+From: layer3_mpi.sif
 
 %help
-    Einstein Toolkit Container --- Layer 2/3 --- LORENE
+    Einstein Toolkit Container --- Layer 4 --- LORENE
     This layer downloads, compiles, and installs LORENE in /Lorene.
     It also exports the HOME_LORENE and LORENE_DIR environment variables.
 
 %labels
-    Version 1.0
-    Author(s):
-        Leo Werneck <wernecklr@gmail.com>
+    Author(s)  Leo Werneck <wernecklr@gmail.com>
+    Version    1.0
 
 %post
     export HOME_LORENE=/Lorene
@@ -29,7 +28,7 @@ INC        = -I$(HOME_LORENE)/C++/Include -I$(HOME_LORENE)/C++/Include_extra
 RANLIB     = ls
 MAKEDEPEND = : > \$(df).d
 DEPDIR     = .deps
-FFT_DIR    = FFTW3
+FFT_DIR    = FFT998
 LIB_CXX    = -L/usr/local/lib -lfftw3 -lgfortran -lstdc++ -lm
 LIB_LAPACK = -L/usr/local/lib -llapack -lblas
 LIB_GSL    = -lgsl -lgslcblas
