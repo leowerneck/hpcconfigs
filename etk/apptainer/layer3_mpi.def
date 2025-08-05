@@ -10,26 +10,42 @@ From: layer2_ucx.sif
     Version   1.0
 
 %post
-    OMPI_MAJOR_VER=4.1
-    OMPI_MINOR_VER=6
-    OMPI_VER=${OMPI_MAJOR_VER}.${OMPI_MINOR_VER}
-
     set -e
 
-    cd /
-    curl -OL https://download.open-mpi.org/release/open-mpi/v${OMPI_MAJOR_VER}/openmpi-${OMPI_VER}.tar.gz
-    tar xzvf openmpi-${OMPI_VER}.tar.gz
-    cd openmpi-${OMPI_VER}
+    ###################
+    # OpenMPI Version #
+    ###################
+    OMPI_VERSION=4.1.6
 
-    ./configure --prefix=/opt/openmpi-${OMPI_VER} --with-ucx=/opt/ucx --with-verbs
+    # Additional versioning, required for download OpenMPI
+    OMPI_MAJOR_VERSION=$(echo "$OMPI_VERSION" | cut -d. -f1,2)
+    OMPI_MINOR_VERSION=$(echo "$OMPI_VERSION" | cut -d. -f3)
+
+    ###################
+    # OpenMPI Install #
+    ###################
+    export OMPI_ROOT=/opt/openmpi-${OMPI_VERSION}
+
+    cd /
+    curl -OL https://download.open-mpi.org/release/open-mpi/v${OMPI_MAJOR_VERSION}/openmpi-${OMPI_VERSION}.tar.gz
+    tar xzvf openmpi-${OMPI_VERSION}.tar.gz
+    cd openmpi-${OMPI_VERSION}
+
+    ./configure               \
+        --prefix=${OMPI_ROOT} \
+        --with-ucx=/opt/ucx   \
+        --with-verbs          \
+        --with-hwloc=/usr     \
+        --without-hwloc-internal
     make -j8 && make install
 
-    ln -s /opt/openmpi-${OMPI_VER} /opt/openmpi
+    cd / && rm -rf openmpi-${OMPI_VERSION}*
 
-    cd / && rm -rf openmpi-${OMPI_VER}*
+    # Convenient symlink
+    ln -s /opt/openmpi-${OMPI_VERSION} /opt/openmpi
 
 %environment
-    export OMPI_VER=4.1.6
+    export OMPI_VERSION=4.1.6
     export OMPI_ROOT=/opt/openmpi
     export PATH=${OMPI_ROOT}/bin:$PATH
     export LD_LIBRARY_PATH=${OMPI_ROOT}/lib:$LD_LIBRARY_PATH

@@ -17,6 +17,7 @@ From: layer4_lib.sif
     touch ${SINGULARITY_ROOTFS}/input_thornlist.th
 
 %post
+
     # Export library directories for the Einstein Toolkit
     export MPI_DIR=$OMPI_ROOT
     export HDF5_DIR=$HDF5_ROOT

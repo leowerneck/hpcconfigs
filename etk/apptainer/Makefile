@@ -50,6 +50,6 @@ $(OS_IMAGE): $(OS_INPUT)
 # Rule to clean up generated images
 clean:
 	@echo "=== Cleaning up generated images ==="
-	rm -f $(OS_IMAGE) $(UCX_IMAGE) $(MPI_IMAGE) $(LOR_IMAGE) $(ET_IMAGE)
+	rm -f $(OS_IMAGE) $(UCX_IMAGE) $(MPI_IMAGE) $(LIB_IMAGE) $(ET_IMAGE)
 
 .PHONY: all clean
