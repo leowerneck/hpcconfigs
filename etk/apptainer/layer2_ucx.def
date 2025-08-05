@@ -11,6 +11,7 @@ From: layer1_os.sif
 
 %post
     UCX_VER=1.15.0
+    UCX_ROOT=/opt/ucx-${UCX_VER}
 
     set -e
 
@@ -19,14 +20,22 @@ From: layer1_os.sif
     tar xzvf ucx-${UCX_VER}.tar.gz
     cd ucx-${UCX_VER}
 
-    ./configure --prefix=/opt/ucx-${UCX_VER} \
-                --enable-mt                  \
-                --with-verbs                 \
-                --with-rc                    \
-                --with-dc                    \
+    ./configure --prefix=${UCX_ROOT}  \
+                --enable-mt           \
+                --with-verbs          \
+                --with-rc             \
+                --with-dc             \
                 --enable-optimizations
     make -j8 && make install
 
     ln -s /opt/ucx-${UCX_VER} /opt/ucx
 
-    cd / && rm -rf ucx-${UCX_VER} ucx-${UCX_VER}.tar.gz
+    cd / && rm -rf ucx-${UCX_VER}*
+
+%environment
+    export UCX_VER=1.15.0
+    export UCX_ROOT=/opt/ucx
+    export PATH=${UCX_ROOT}/bin:$PATH
+    export LD_LIBRARY_PATH=${UCX_ROOT}/lib:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=${UCX_ROOT}/lib:$LIBRARY_PATH
+    export CPATH=${UCX_ROOT}/include:$CPATH

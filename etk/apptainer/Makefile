@@ -7,14 +7,14 @@ THORNLIST ?= bns.th
 OS_INPUT  := layer1_os.def
 UCX_INPUT := layer2_ucx.def
 MPI_INPUT := layer3_mpi.def
-LOR_INPUT := layer4_lorene.def
+LIB_INPUT := layer4_lib.def
 ET_INPUT  := layer5_et.def
 
 # Define image names
 OS_IMAGE  := $(OS_INPUT:.def=.sif)
 UCX_IMAGE := $(UCX_INPUT:.def=.sif)
 MPI_IMAGE := $(MPI_INPUT:.def=.sif)
-LOR_IMAGE := $(LOR_INPUT:.def=.sif)
+LIB_IMAGE := $(LIB_INPUT:.def=.sif)
 ET_IMAGE  := et.sif
 
 # Get full path to thornlist
@@ -25,15 +25,15 @@ all: $(ET_IMAGE)
 
 # Rule to build the final Einstein Toolkit image
 # This depends on the ET definition file, the OS base image, and the thornlist
-$(ET_IMAGE): $(ET_INPUT) $(LOR_IMAGE)
+$(ET_IMAGE): $(ET_INPUT) $(LIB_IMAGE)
 	@echo "=== Building Layer 5 --- Einstein Toolkit ==="
 	apptainer build --force                            \
 		--bind $(THORNLIST_FULLPATH):/input_thornlist.th \
 		$(ET_IMAGE) $(ET_INPUT)
 
-$(LOR_IMAGE): $(LOR_INPUT) $(MPI_IMAGE)
-	@echo "=== Building Layer 4 --- LORENE ==="
-	apptainer build --force $(LOR_IMAGE) $(LOR_INPUT)
+$(LIB_IMAGE): $(LIB_INPUT) $(MPI_IMAGE)
+	@echo "=== Building Layer 4 --- External Libraries ==="
+	apptainer build --force $(LIB_IMAGE) $(LIB_INPUT)
 
 $(MPI_IMAGE): $(MPI_INPUT) $(UCX_IMAGE)
 	@echo "=== Building Layer 3 --- MPI ==="

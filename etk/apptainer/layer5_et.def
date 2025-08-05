@@ -1,6 +1,6 @@
-# File: layer3_et.def
+# File: layer5_et.def
 Bootstrap: localimage
-From: layer2_lorene.sif
+From: layer4_lib.sif
 
 %help
     Einstein Toolkit Container --- Layer 5 --- Einstein Toolkit
@@ -17,6 +17,12 @@ From: layer2_lorene.sif
     touch ${SINGULARITY_ROOTFS}/input_thornlist.th
 
 %post
+    # Export library directories for the Einstein Toolkit
+    export MPI_DIR=$OMPI_ROOT
+    export HDF5_DIR=$HDF5_ROOT
+    export FFTW3_DIR=$FFTW_ROOT
+    export GSL_DIR=$GSL_ROOT
+
     # Move to a known directory
     cd /
 
@@ -33,18 +39,18 @@ From: layer2_lorene.sif
 
     # Create option list
     echo '# Einstein Toolkit options list
-VERSION    = 2025-08-01
+VERSION = 2025-08-04
 
 # Compilers
 CPP = cpp
 FPP = cpp
-CC  = gcc
-CXX = g++
-F77 = gfortran
-F90 = gfortran
+CC  = mpicc
+CXX = mpicxx
+F77 = mpifort
+F90 = mpifort
 
 # Compiler flags
-CPPFLAGS = -DMPICH_IGNORE_CXX_SEEK
+CPPFLAGS =
 FPPFLAGS = -traditional
 CFLAGS   = -O2 -g -fopenmp -march=native -std=gnu99
 CXXFLAGS = -O2 -g -fopenmp -march=native -std=c++17
@@ -63,11 +69,6 @@ VECTORISE_INLINE                     = yes
 # Debug flags
 DEBUG = no
 
-# MPI Installation
-MPI_LIBS     = mpi
-MPI_LIB_DIRS = /opt/openmpi/lib
-MPI_INC_DIRS = /opt/openmpi/include
-
 # Misc?
 PTHREADS_DIR      = NO_BUILD
 C_LINE_DIRECTIVES = yes
@@ -76,7 +77,7 @@ F_LINE_DIRECTIVES = yes
 
     yes | make sim-config options=et_options.cfg
     cp thornlists/input_thornlist.th configs/sim/ThornList
-    make -j16
+    make -j8
 
     # Copy the executable
     cp exe/cactus_sim /et_exe

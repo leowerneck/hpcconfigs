@@ -1,0 +1,185 @@
+# File: layer2_lib.def
+Bootstrap: localimage
+From: layer3_mpi.sif
+
+%help
+    Einstein Toolkit Container --- Layer 4 --- External Libraries
+    This layer installs the following external libraries:
+      - OpenBLAS : /opt/openblas
+      - HDF5     : /opt/hdf5
+      - FFTW3    : /opt/fftw
+      - GSL      : /opt/gsl
+      - LORENE   : /opt/Lorene
+
+%labels
+    Author(s)  Leo Werneck <wernecklr@gmail.com>
+    Version    1.0
+
+%post
+    set -e
+
+    ####################
+    # Library Versions #
+    ####################
+    OPENBLAS_VERSION=0.3.30
+    HDF5_VERSION=1.14.6
+    FFTW_VERSION=3.3.10
+    GSL_VERSION=2.8
+
+    # Additional versioning required by HDF5
+    HDF5_VERSION_UND=$(echo "$HDF5_VERSION" | tr . _)
+    HDF5_VERSION_MAJOR_UND=$(echo "$HDF5_VERSION_UND" | cut -d_ -f1,2)
+
+    ############
+    # OpenBLAS #
+    ############
+    export OPENBLAS_ROOT=/opt/openblas-${OPENBLAS_VERSION}
+    export LD_LIBRARY_PATH=${OPENBLAS_ROOT}/lib:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=${OPENBLAS_ROOT}/lib:$LIBRARY_PATH
+    export C_INCLUDE_PATH=${OPENBLAS_ROOT}/include:$C_INCLUDE_PATH
+
+    cd /
+    curl -LO https://github.com/OpenMathLib/OpenBLAS/releases/download/v${OPENBLAS_VERSION}/OpenBLAS-${OPENBLAS_VERSION}.tar.gz
+    tar xzvf OpenBLAS-${OPENBLAS_VERSION}.tar.gz
+    cd OpenBLAS-${OPENBLAS_VERSION}
+    make -j8 DYNAMIC_ARCH=1 USE_OPENMP= && make PREFIX=${OPENBLAS_ROOT} install
+
+    cd / && rm -rf /OpenBLAS-${OPENBLAS_VERSION}*
+
+    # Convenient symlink
+    ln -s ${OPENBLAS_ROOT} /opt/openblas
+
+    ########
+    # HDF5 #
+    ########
+    export HDF5_ROOT=/opt/hdf5-${HDF5_VERSION}
+    export LD_LIBRARY_PATH=${HDF5_ROOT}/lib:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=${HDF5_ROOT}/lib:$LIBRARY_PATH
+    export C_INCLUDE_PATH=${HDF5_ROOT}/include:$C_INCLUDE_PATH
+    export CPATH=${HDF5_ROOT}/include:$CPATH
+    export PATH=${HDF5_ROOT}/bin:$PATH
+
+    cd /
+    curl -LO https://support.hdfgroup.org/releases/hdf5/v${HDF5_VERSION_MAJOR_UND}/v${HDF5_VERSION_UND}/downloads/hdf5-${HDF5_VERSION}.tar.gz
+    tar xzvf hdf5-${HDF5_VERSION}.tar.gz
+    cd hdf5-${HDF5_VERSION}
+    ./configure                        \
+        --prefix=${HDF5_ROOT}          \
+        --enable-fortran               \
+        --enable-cxx                   \
+        --enable-shared                \
+        --enable-static                \
+        --with-zlib=yes                \
+        --enable-build-mode=production \
+        CC=mpicc                       \
+        CXX=mpicxx                     \
+        FC=mpif90
+    make -j8 && make install
+
+    cd / && rm -rf /hdf5-${HDF5_VERSION}*
+
+    # Convenient symlink
+    ln -s ${HDF5_ROOT} /opt/hdf5
+
+    ########
+    # FFTW #
+    ########
+    export FFTW_ROOT=/opt/fftw-${FFTW_VERSION}
+    export LD_LIBRARY_PATH=${FFTW_ROOT}/lib:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=${FFTW_ROOT}/lib:$LIBRARY_PATH
+    export C_INCLUDE_PATH=${FFTW_ROOT}/include:$C_INCLUDE_PATH
+    export CPATH=${FFTW_ROOT}/include:$CPATH
+
+    cd /
+    curl -LO https://www.fftw.org/fftw-${FFTW_VERSION}.tar.gz
+    tar xzvf fftw-${FFTW_VERSION}.tar.gz
+    cd fftw-${FFTW_VERSION}
+    ./configure               \
+        --prefix=${FFTW_ROOT} \
+        --enable-shared       \
+        --enable-threads      \
+        --enable-openmp       \
+        --enable-sse2         \
+        --enable-avx          \
+        --enable-avx2         \
+        --enable-avx512       \
+        --enable-fma          \
+        --enable-mpi          \
+        CC=mpicc
+    make -j8 && make install
+
+    cd / && rm -rf /fftw-${FFTW_VERSION}*
+
+    # Convenient symlink
+    ln -s ${FFTW_ROOT} /opt/fftw
+
+    #######
+    # GSL #
+    #######
+    export GSL_ROOT=/opt/gsl-${GSL_VERSION}
+    export LD_LIBRARY_PATH=${GSL_ROOT}/lib:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=${GSL_ROOT}/lib:$LIBRARY_PATH
+    export C_INCLUDE_PATH=${GSL_ROOT}/include:$C_INCLUDE_PATH
+    export CPATH=${GSL_ROOT}/include:$CPATH
+
+    cd /
+    curl -LO https://mirror.ibcp.fr/pub/gnu/gsl/gsl-${GSL_VERSION}.tar.gz
+    tar xzvf gsl-${GSL_VERSION}.tar.gz
+    cd gsl-${GSL_VERSION}
+    ./configure                                         \
+        --prefix=${GSL_ROOT}                            \
+        --enable-shared                                 \
+        --disable-static                                \
+        --with-blas=${OPENBLAS_ROOT}/lib/libopenblas.so \
+        LDFLAGS="-fopenmp"                              \
+        CFLAGS="-O3 -fPIC -march=native -fopenmp"
+    make -j8 && make install
+
+    cd / && rm -rf /gsl-${GSL_VERSION}*
+
+    # Convenient symlink
+    ln -s ${GSL_ROOT} /opt/gsl
+
+    ##########
+    # LORENE #
+    ##########
+    export HOME_LORENE=/opt/Lorene
+
+    git clone https://github.com/leowerneck/Lorene.git $HOME_LORENE
+    cd $HOME_LORENE
+
+    echo '# Lorene configuration
+CXX        = g++
+F77        = gfortran
+CXXFLAGS   = -O2 -fopenmp -march=native -std=c++17 -rdynamic -DNDEBUG
+CXXFLAGS_G = -O2 -fopenmp -march=native -std=c++17 -rdynamic
+F77FLAGS   = -O2 -fopenmp -march=native -fcray-pointer -ffixed-line-length-none -fno-range-check -DNDEBUG
+F77FLAGS_G = -O2 -fopenmp -march=native -fcray-pointer -ffixed-line-length-none -fno-range-check
+INC        = -I$(HOME_LORENE)/C++/Include -I$(HOME_LORENE)/C++/Include_extra
+RANLIB     = ls
+MAKEDEPEND = : > \$(df).d
+DEPDIR     = .deps
+FFT_DIR    = FFTW3
+LIB_CXX    = -lfftw3_omp -lgfortran -lstdc++ -lm
+LIB_LAPACK = -lopenblas
+LIB_GSL    = -lgsl -lopenblas
+LIB_PGPLOT =
+' > local_settings
+
+    make fortran
+    make export -j8
+    make cpp -j8
+
+%environment
+    export OPENBLAS_ROOT=/opt/openblas
+    export HDF5_ROOT=/opt/hdf5
+    export FFTW_ROOT=/opt/fftw
+    export GSL_ROOT=/opt/gsl
+    export HOME_LORENE=/Lorene
+
+    # Append paths above to library path
+    export LD_LIBRARY_PATH=${HOME_GSL}/lib:${HOME_FFTW}/lib:${HOME_HDF5}/lib:${HOME_OPENBLAS}/lib:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=${HOME_GSL}/lib:${HOME_FFTW}/lib:${HOME_HDF5}/lib:${HOME_OPENBLAS}/lib:$LIBRARY_PATH
+    export C_INCLUDE_PATH=${HOME_GSL}/include:${HOME_FFTW}/include:${HOME_HDF5}/include:${HOME_OPENBLAS}/include:$C_INCLUDE_PATH
+    export PATH=${HDF5_ROOT}/bin:$PATH
+    export CPATH=${GSL_ROOT}/include:${FFTW_ROOT}/include:${HDF5_ROOT}/include:$CPATH
