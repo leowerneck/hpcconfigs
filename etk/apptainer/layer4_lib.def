@@ -148,14 +148,14 @@ From: layer3_mpi.sif
     git clone https://github.com/leowerneck/Lorene.git $HOME_LORENE
     cd $HOME_LORENE
 
-    echo '# Lorene configuration
+    echo "# Lorene configuration
 CXX        = g++
 F77        = gfortran
 CXXFLAGS   = -O2 -fopenmp -march=native -std=c++17 -rdynamic -DNDEBUG
 CXXFLAGS_G = -O2 -fopenmp -march=native -std=c++17 -rdynamic
 F77FLAGS   = -O2 -fopenmp -march=native -fcray-pointer -ffixed-line-length-none -fno-range-check -DNDEBUG
 F77FLAGS_G = -O2 -fopenmp -march=native -fcray-pointer -ffixed-line-length-none -fno-range-check
-INC        = -I$(HOME_LORENE)/C++/Include -I$(HOME_LORENE)/C++/Include_extra
+INC        = -I${HOME_LORENE}/C++/Include -I${HOME_LORENE}/C++/Include_extra
 RANLIB     = ls
 MAKEDEPEND = : > \$(df).d
 DEPDIR     = .deps
@@ -164,7 +164,7 @@ LIB_CXX    = -lfftw3_omp -lgfortran -lstdc++ -lm
 LIB_LAPACK = -lopenblas
 LIB_GSL    = -lgsl -lopenblas
 LIB_PGPLOT =
-' > local_settings
+" > local_settings
 
     make fortran
     make export -j8
@@ -175,7 +175,7 @@ LIB_PGPLOT =
     export HDF5_ROOT=/opt/hdf5
     export FFTW_ROOT=/opt/fftw
     export GSL_ROOT=/opt/gsl
-    export HOME_LORENE=/Lorene
+    export HOME_LORENE=/opt/Lorene
 
     # Append paths above to library path
     export LD_LIBRARY_PATH=${HOME_GSL}/lib:${HOME_FFTW}/lib:${HOME_HDF5}/lib:${HOME_OPENBLAS}/lib:$LD_LIBRARY_PATH

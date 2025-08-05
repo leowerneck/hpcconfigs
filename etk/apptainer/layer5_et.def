@@ -38,7 +38,7 @@ From: layer4_lib.sif
     cd /Cactus
 
     # Create option list
-    echo '# Einstein Toolkit options list
+    echo "# Einstein Toolkit options list
 VERSION = 2025-08-04
 
 # Compilers
@@ -69,15 +69,23 @@ VECTORISE_INLINE                     = yes
 # Debug flags
 DEBUG = no
 
+# External Libraries
+MPI_DIR      = $OMPI_ROOT
+HDF5_DIR     = $HDF5_ROOT
+FFTW3_DIR    = $FFTW_ROOT
+GSL_DIR      = $GSL_ROOT
+OPENBLAS_DIR = $OPENBLAS_ROOT
+LORENE_DIR   = $HOME_LORENE
+
 # Misc?
 PTHREADS_DIR      = NO_BUILD
 C_LINE_DIRECTIVES = yes
 F_LINE_DIRECTIVES = yes
-' > et_options.cfg
+" > et_options.cfg
 
-    yes | make sim-config options=et_options.cfg
+    yes | make sim-config options=et_options.cfg | tee /et_config.out
     cp thornlists/input_thornlist.th configs/sim/ThornList
-    make -j8
+    make -j8 | tee /et_make.out
 
     # Copy the executable
     cp exe/cactus_sim /et_exe

@@ -280,8 +280,7 @@ EinsteinUtils/TGRtensor
 !REPO_BRANCH = $ET_RELEASE
 !REPO_PATH = ../$1-$2
 !CHECKOUT =
-ExternalLibraries/BLAS
-ExternalLibraries/LAPACK
+ExternalLibraries/OpenBLAS
 ExternalLibraries/FFTW3
 ExternalLibraries/GSL
 ExternalLibraries/HDF5
