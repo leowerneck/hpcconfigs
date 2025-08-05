@@ -18,12 +18,6 @@ From: layer4_lib.sif
 
 %post
 
-    # Export library directories for the Einstein Toolkit
-    export MPI_DIR=$OMPI_ROOT
-    export HDF5_DIR=$HDF5_ROOT
-    export FFTW3_DIR=$FFTW_ROOT
-    export GSL_DIR=$GSL_ROOT
-
     # Move to a known directory
     cd /
 
@@ -70,7 +64,7 @@ VECTORISE_INLINE                     = yes
 # Debug flags
 DEBUG = no
 
-# External Libraries
+# External library directories
 MPI_DIR      = $OMPI_ROOT
 HDF5_DIR     = $HDF5_ROOT
 FFTW3_DIR    = $FFTW_ROOT
