@@ -10,12 +10,12 @@ MPI_INPUT := layer3_mpi.def
 LIB_INPUT := layer4_lib.def
 ET_INPUT  := layer5_et.def
 
-# Define image names
+# Set image names
 OS_IMAGE  := $(OS_INPUT:.def=.sif)
 UCX_IMAGE := $(UCX_INPUT:.def=.sif)
 MPI_IMAGE := $(MPI_INPUT:.def=.sif)
 LIB_IMAGE := $(LIB_INPUT:.def=.sif)
-ET_IMAGE  := et.sif
+ET_IMAGE  := et_$(THORNLIST:.th=).sif
 
 # Get full path to thornlist
 THORNLIST_FULLPATH := $(shell realpath $(THORNLIST))

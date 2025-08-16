@@ -3,16 +3,54 @@ Bootstrap: docker
 From: ubuntu:24.04
 
 %help
-    Einstein Toolkit Container --- Layer 1/3 --- Operating System
-    This is a base image for scientific computing.
-    It includes Ubuntu 24.04 with common compilers, libraries
-    (MPI, HDF5, FFTW3, etc.), and a configured UTF-8 locale.
+    Einstein Toolkit Container --- Layer 1/5 --- Operating System
+
+    This base layer bootstraps Ubuntu 24.04 and installs
+    basic compilers, libraries, and build tools.
 
 %labels
     Author(s)  Leo Werneck <wernecklr@gmail.com>
     Version    1.0
+    Layer      1/5
 
 %post
+    set -e
+
+    # Create the environment file, so be sourced by every layer
+    cat << 'EOF' > /env.sh
+#!/bin/sh
+
+# File: /env.sh
+# Desc: contains environment variables used across multiple layers
+
+# Locale
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# Compilers
+export CC=$(which gcc)
+export CXX=$(which g++)
+export FC=$(which gfortran)
+export F77=$(which gfortran)
+export F90=$(which gfortran)
+
+# Resources repository
+export RESOURCES_URL=https://github.com/leowerneck/apptainer_libs/raw/refs/heads/main
+
+# Convenience functions
+download_unpack_and_cd() {
+    cd /
+    curl -LO ${RESOURCES_URL}/$1.tar.gz
+    tar xzvf $1.tar.gz
+    cd /$1
+}
+
+clean() {
+    cd / && rm -rf ${1}*
+}
+EOF
+
     # Prevent interactive prompts during installation
     export DEBIAN_FRONTEND=noninteractive
 
@@ -54,18 +92,17 @@ From: ubuntu:24.04
     locale-gen
     update-locale LANG=en_US.UTF-8
 
+%test
+    echo "Checking compilers and basic tools..."
+    for tool in gcc g++ gfortran cmake python3 locale make pkg-config curl; do
+        TOOL=$(which $tool)
+        if [ $? -eq 0 ]; then
+            echo "Success! Found $tool in $TOOL"
+        else
+            echo "Error! Could not find $tool"
+            exit 1
+        fi
+    done
+
 %environment
-    # Set the locale environment for any container that uses this as a base
-    export LANGUAGE=en_US.UTF-8
-    export LANG=en_US.UTF-8
-    export LC_ALL=en_US.UTF-8
-
-    ####################
-    # Export Compilers #
-    ####################
-    export CC=$(which gcc)
-    export CXX=$(which g++)
-    export FC=$(which gfortran)
-    export F77=$(which gfortran)
-    export F90=$(which gfortran)
-
+    . /env.sh
