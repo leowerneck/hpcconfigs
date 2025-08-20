@@ -13,8 +13,13 @@ From: ubuntu:24.04
     Version    1.0
     Layer      1/5
 
+%files
+    ./clusters /opt/modulefiles/cluster
+
 %post
     set -e
+
+    ls /opt/modulefiles
 
     # Create the environment file, so be sourced by every layer
     cat << 'EOF' > /env.sh
@@ -49,6 +54,13 @@ download_unpack_and_cd() {
 clean() {
     cd / && rm -rf ${1}*
 }
+
+# Initialize Lmod
+[ -f /etc/profile.d/lmod.sh ] && . /etc/profile.d/lmod.sh
+
+# Modules path
+export MODULES_ROOT=/opt/modulefiles
+module use $MODULES_ROOT
 EOF
 
     # Prevent interactive prompts during installation
@@ -70,6 +82,7 @@ EOF
         librdmacm-dev     \
         libudev-dev       \
         libyaml-cpp-dev   \
+        lmod              \
         locales           \
         make              \
         numactl           \
@@ -83,6 +96,9 @@ EOF
         rsync             \
         zlib1g-dev
 
+    # Set up lmod
+    echo '. /etc/profile.d/lmod.sh' > /etc/profile.d/zz-lmod.sh
+
     # Clean up apt cache to reduce image size
     rm -rf /var/lib/apt/lists/*
 
@@ -92,7 +108,11 @@ EOF
     locale-gen
     update-locale LANG=en_US.UTF-8
 
+    # Load the environment
+    . /env.sh
+
 %test
+    . /env.sh
     echo "Checking compilers and basic tools..."
     for tool in gcc g++ gfortran cmake python3 locale make pkg-config curl; do
         TOOL=$(which $tool)
@@ -104,5 +124,8 @@ EOF
         fi
     done
 
-%environment
-    . /env.sh
+    if command -v module >/dev/null 2>&1; then
+        echo "Success! 'module' is available"
+    else
+        echo "Error! 'module' command not found"; exit 1
+    fi

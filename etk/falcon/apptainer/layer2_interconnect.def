@@ -1,0 +1,61 @@
+# File: layer2_interconnect.def
+Bootstrap: localimage
+From: layer1_os.sif
+
+%help
+    Einstein Toolkit Container --- Layer 2/5 --- Interconnect
+
+    This layer installs interconnect libraries.
+
+%labels
+    Author(s)  Leo Werneck <wernecklr@gmail.com>
+    Version    1.0
+    Layer      2/5
+
+%post
+    set -e
+
+    # Load Falcon environment
+    . /env.sh
+    module purge
+    module load cluster/falcon
+
+    download_unpack_and_cd ucx-${UCX_VERSION}
+
+    ./configure --prefix=${FALCON_ROOT} \
+                --enable-mt             \
+                --with-verbs            \
+                --with-rc               \
+                --with-dc               \
+                --enable-optimizations
+    make -j8 && make install
+
+    clean ucx-${UCX_VERSION}
+
+    module purge
+
+%test
+    # Load Falcon environment
+    . /env.sh
+    module load cluster/falcon
+
+    echo "Testing ucx install"
+    for tool in ${LIBS_BIN}/ucx_info ucx_info; do
+        TOOL=$(which $tool)
+        if [ $? -eq 0 ]; then
+            echo "Success! Found $tool in $TOOL"
+        else
+            echo "Error! Could not find $tool"
+            exit 1
+        fi
+    done
+
+    printf "Testing if pkg-config can find ucx: "
+    if ! pkg-config --exists ucx; then
+        echo "no!"
+        echo "Error: pkg-config cannot find UCX"
+        exit 1
+    fi
+    echo "yes!"
+
+    module purge

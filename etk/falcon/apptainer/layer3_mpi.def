@@ -1,6 +1,6 @@
 # File: layer3_mpi.def
 Bootstrap: localimage
-From: layer2_ucx.sif
+From: layer2_interconnect.sif
 
 %help
     Einstein Toolkit Container --- Layer 3/5 --- MPI
@@ -15,18 +15,13 @@ From: layer2_ucx.sif
 
 %post
     set -e
-    cat << 'EOF' >> /env.sh
 
-# MPI
-export FALCON_MPI_FLAVOR=openmpi
-export FALCON_MPI_VERSION=4.1.6
-EOF
-
-    # Load the updated environment
+    # Load Falcon environment
     . /env.sh
+    module load cluster/falcon
 
     cd /
-    download_unpack_and_cd ${FALCON_MPI_FLAVOR}-${FALCON_MPI_VERSION}
+    download_unpack_and_cd ${MPI_FLAVOR}-${MPI_VERSION}
 
     ./configure                   \
         --prefix=${FALCON_ROOT}   \
@@ -36,14 +31,20 @@ EOF
         --without-hwloc-internal
     make -j8 && make install
 
-    clean ${FALCON_MPI_FLAVOR}-${FALCON_MPI_VERSION}
+    clean ${MPI_FLAVOR}-${MPI_VERSION}
+
+    module purge
 
 %test
+    # Load Falcon environment
+    . /env.sh
+    module load cluster/falcon
+
     echo "Testing mpi install"
     for tool in \
-            ${FALCON_BIN}/mpicc   \
-            ${FALCON_BIN}/mpicxx  \
-            ${FALCON_BIN}/mpifort \
+            ${LIBS_BIN}/mpicc   \
+            ${LIBS_BIN}/mpicxx  \
+            ${LIBS_BIN}/mpifort \
             mpicc mpicxx mpifort; do
 
         if TOOL=$(command -v "$tool" 2>/dev/null); then
@@ -62,6 +63,3 @@ EOF
         exit 1
     fi
     echo "yes!"
-
-%environment
-    . /env.sh
