@@ -17,17 +17,17 @@ From: layer2_fab.sif
     # Load environment
     . /env.sh
 
-    for CLUSTER in ${AVAILABLE_CLUSTERS}; do
+    for CLUSTER in ${SUPPORTED_CLUSTERS}; do
         module load cluster/${CLUSTER}
 
         cd /
         download_unpack_and_cd ${MPI_FLAVOR}-${MPI_VERSION}
 
-        ./configure                   \
+        ./configure                 \
             --prefix=${LIBS_ROOT}   \
             --with-ucx=${LIBS_ROOT} \
-            --with-verbs              \
-            --with-hwloc=/usr         \
+            --with-verbs            \
+            --with-hwloc=/usr       \
             --without-hwloc-internal
         make -j8 && make install
 
@@ -53,7 +53,7 @@ From: layer2_fab.sif
     # Load environment
     . /env.sh
 
-    for CLUSTER in ${AVAILABLE_CLUSTERS}; do
+    for CLUSTER in ${SUPPORTED_CLUSTERS}; do
         module load cluster/${CLUSTER}
 
         echo "Testing mpi install"

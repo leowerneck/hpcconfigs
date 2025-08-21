@@ -19,7 +19,7 @@ From: layer1_os.sif
     . /env.sh
 
     # Install interconnect fabric libraries for different clusters
-    for CLUSTER in ${AVAILABLE_CLUSTERS}; do
+    for CLUSTER in ${SUPPORTED_CLUSTERS}; do
         module load cluster/${CLUSTER}
 
         download_unpack_and_cd ${FAB_FLAVOR}-${FAB_VERSION}
@@ -41,7 +41,7 @@ From: layer1_os.sif
     # Load environment
     . /env.sh
 
-    for CLUSTER in ${AVAILABLE_CLUSTERS}; do
+    for CLUSTER in ${SUPPORTED_CLUSTERS}; do
         module load cluster/${CLUSTER}
 
         echo "Testing $FAB_FLAVOR install... "

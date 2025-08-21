@@ -62,7 +62,7 @@ export MODULES_ROOT=/opt/modulefiles
 module use $MODULES_ROOT
 
 # Export available cluster configurations
-export AVAILABLE_CLUSTERS=$(find $MODULES_ROOT -type f -name '*.lua' -exec basename {} .lua \;)
+export SUPPORTED_CLUSTERS=$(find $MODULES_ROOT -type f -name '*.lua' -exec basename {} .lua \;)
 EOF
 
     # Install all required system-level dependencies
@@ -115,6 +115,10 @@ EOF
     . /opt/py3/bin/activate
     pip install -U pip pyyaml
     python /opt/cluster_parser.py /opt/clusters.yml $MODULES_ROOT
+
+    # Clean up the python virtual environment, as we will not need it anymore
+    deactivate
+    rm -rf /opt/py3
 
 %test
     . /env.sh
