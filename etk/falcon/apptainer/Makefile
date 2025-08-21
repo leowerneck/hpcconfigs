@@ -27,7 +27,7 @@ all: $(ET_IMAGE)
 # This depends on the ET definition file, the OS base image, and the thornlist
 $(ET_IMAGE): $(ET_INPUT) $(LIB_IMAGE)
 	@echo "=== Building Layer 5 --- Einstein Toolkit ==="
-	apptainer build --force                              \
+	apptainer build --force                            \
 		--bind $(THORNLIST_FULLPATH):/input_thornlist.th \
 		$(ET_IMAGE) $(ET_INPUT)
 

@@ -4,9 +4,7 @@ From: layer2_fab.sif
 
 %help
     Einstein Toolkit Container --- Layer 3/5 --- MPI
-
     This layer installs MPI libraries.
-
 
 %labels
     Author(s)  Leo Werneck <wernecklr@gmail.com>
