@@ -4,18 +4,18 @@
 THORNLIST ?= bns.th
 
 # Define inputs
-OS_INPUT           := layer1_os.def
-INTERCONNECT_INPUT := layer2_interconnect.def
-MPI_INPUT          := layer3_mpi.def
-LIB_INPUT          := layer4_lib.def
-ET_INPUT           := layer5_et.def
+OS_INPUT  := layer1_os.def
+FAB_INPUT := layer2_fab.def
+MPI_INPUT := layer3_mpi.def
+LIB_INPUT := layer4_lib.def
+ET_INPUT  := layer5_et.def
 
 # Set image names
-OS_IMAGE           := $(OS_INPUT:.def=.sif)
-INTERCONNECT_IMAGE := $(INTERCONNECT_INPUT:.def=.sif)
-MPI_IMAGE          := $(MPI_INPUT:.def=.sif)
-LIB_IMAGE          := $(LIB_INPUT:.def=.sif)
-ET_IMAGE           := et_$(THORNLIST:.th=).sif
+OS_IMAGE  := $(OS_INPUT:.def=.sif)
+FAB_IMAGE := $(FAB_INPUT:.def=.sif)
+MPI_IMAGE := $(MPI_INPUT:.def=.sif)
+LIB_IMAGE := $(LIB_INPUT:.def=.sif)
+ET_IMAGE  := et_$(THORNLIST:.th=).sif
 
 # Get full path to thornlist
 THORNLIST_FULLPATH := $(shell realpath $(THORNLIST))
@@ -27,7 +27,7 @@ all: $(ET_IMAGE)
 # This depends on the ET definition file, the OS base image, and the thornlist
 $(ET_IMAGE): $(ET_INPUT) $(LIB_IMAGE)
 	@echo "=== Building Layer 5 --- Einstein Toolkit ==="
-	apptainer build --force                            \
+	apptainer build --force                              \
 		--bind $(THORNLIST_FULLPATH):/input_thornlist.th \
 		$(ET_IMAGE) $(ET_INPUT)
 
@@ -35,13 +35,13 @@ $(LIB_IMAGE): $(LIB_INPUT) $(MPI_IMAGE)
 	@echo "=== Building Layer 4 --- External Libraries ==="
 	apptainer build --force $(LIB_IMAGE) $(LIB_INPUT)
 
-$(MPI_IMAGE): $(MPI_INPUT) $(INTERCONNECT_IMAGE)
+$(MPI_IMAGE): $(MPI_INPUT) $(FAB_IMAGE)
 	@echo "=== Building Layer 3 --- MPI ==="
 	apptainer build --force $(MPI_IMAGE) $(MPI_INPUT)
 
-$(INTERCONNECT_IMAGE): $(INTERCONNECT_INPUT) $(OS_IMAGE)
-	@echo "=== Building Layer 2 --- INTERCONNECT ==="
-	apptainer build --force $(INTERCONNECT_IMAGE) $(INTERCONNECT_INPUT)
+$(FAB_IMAGE): $(FAB_INPUT) $(OS_IMAGE)
+	@echo "=== Building Layer 2 --- Interconnect Fabric ==="
+	apptainer build --force $(FAB_IMAGE) $(FAB_INPUT)
 
 $(OS_IMAGE): $(OS_INPUT)
 	@echo "=== Building Layer 1 --- Base OS Image ==="
@@ -50,6 +50,6 @@ $(OS_IMAGE): $(OS_INPUT)
 # Rule to clean up generated images
 clean:
 	@echo "=== Cleaning up generated images ==="
-	rm -f $(OS_IMAGE) $(INTERCONNECT_IMAGE) $(MPI_IMAGE) $(LIB_IMAGE) $(ET_IMAGE)
+	rm -f $(OS_IMAGE) $(FAB_IMAGE) $(MPI_IMAGE) $(LIB_IMAGE) $(ET_IMAGE)
 
 .PHONY: all clean

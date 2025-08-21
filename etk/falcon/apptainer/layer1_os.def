@@ -14,12 +14,11 @@ From: ubuntu:24.04
     Layer      1/5
 
 %files
-    ./clusters /opt/modulefiles/cluster
+    ./clusters.yml /opt/clusters.yml
+    ./parser.py /opt/cluster_parser.py
 
 %post
     set -e
-
-    ls /opt/modulefiles
 
     # Create the environment file, so be sourced by every layer
     cat << 'EOF' > /env.sh
@@ -61,10 +60,10 @@ clean() {
 # Modules path
 export MODULES_ROOT=/opt/modulefiles
 module use $MODULES_ROOT
-EOF
 
-    # Prevent interactive prompts during installation
-    export DEBIAN_FRONTEND=noninteractive
+# Export available cluster configurations
+export AVAILABLE_CLUSTERS=$(find $MODULES_ROOT -type f -name '*.lua' -exec basename {} .lua \;)
+EOF
 
     # Install all required system-level dependencies
     apt-get -y update && apt-get -y install --no-install-recommends \
@@ -92,6 +91,7 @@ EOF
         python-is-python3 \
         python3           \
         python3-pip       \
+        python3-venv      \
         rdma-core         \
         rsync             \
         zlib1g-dev
@@ -108,8 +108,13 @@ EOF
     locale-gen
     update-locale LANG=en_US.UTF-8
 
-    # Load the environment
+    # Generate the modules
     . /env.sh
+    mkdir $MODULES_ROOT
+    python3 -m venv /opt/py3
+    . /opt/py3/bin/activate
+    pip install -U pip pyyaml
+    python /opt/cluster_parser.py /opt/clusters.yml $MODULES_ROOT
 
 %test
     . /env.sh
