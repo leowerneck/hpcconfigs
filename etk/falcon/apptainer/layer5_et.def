@@ -20,6 +20,10 @@ From: layer4_lib.sif
 
 %post
 
+    # Load Falcon environment
+    . /env.sh
+    module load cluster/falcon
+
     # Move to a known directory
     cd /
 
@@ -68,11 +72,11 @@ VECTORISE_INLINE                     = yes
 DEBUG = no
 
 # External library directories
-MPI_DIR      = $FALCON_ROOT
-HDF5_DIR     = $FALCON_ROOT
-FFTW3_DIR    = $FALCON_ROOT
-GSL_DIR      = $FALCON_ROOT
-OPENBLAS_DIR = $FALCON_ROOT
+MPI_DIR      = $LIBS_ROOT
+HDF5_DIR     = $LIBS_ROOT
+FFTW3_DIR    = $LIBS_ROOT
+GSL_DIR      = $LIBS_ROOT
+OPENBLAS_DIR = $LIBS_ROOT
 LORENE_DIR   = $HOME_LORENE
 
 # Misc?

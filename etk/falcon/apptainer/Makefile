@@ -5,14 +5,14 @@ THORNLIST ?= bns.th
 
 # Define inputs
 OS_INPUT  := layer1_os.def
-UCX_INPUT := layer2_ucx.def
+FAB_INPUT := layer2_fab.def
 MPI_INPUT := layer3_mpi.def
 LIB_INPUT := layer4_lib.def
 ET_INPUT  := layer5_et.def
 
 # Set image names
 OS_IMAGE  := $(OS_INPUT:.def=.sif)
-UCX_IMAGE := $(UCX_INPUT:.def=.sif)
+FAB_IMAGE := $(FAB_INPUT:.def=.sif)
 MPI_IMAGE := $(MPI_INPUT:.def=.sif)
 LIB_IMAGE := $(LIB_INPUT:.def=.sif)
 ET_IMAGE  := et_$(THORNLIST:.th=).sif
@@ -35,13 +35,13 @@ $(LIB_IMAGE): $(LIB_INPUT) $(MPI_IMAGE)
 	@echo "=== Building Layer 4 --- External Libraries ==="
 	apptainer build --force $(LIB_IMAGE) $(LIB_INPUT)
 
-$(MPI_IMAGE): $(MPI_INPUT) $(UCX_IMAGE)
+$(MPI_IMAGE): $(MPI_INPUT) $(FAB_IMAGE)
 	@echo "=== Building Layer 3 --- MPI ==="
 	apptainer build --force $(MPI_IMAGE) $(MPI_INPUT)
 
-$(UCX_IMAGE): $(UCX_INPUT) $(OS_IMAGE)
-	@echo "=== Building Layer 2 --- UCX ==="
-	apptainer build --force $(UCX_IMAGE) $(UCX_INPUT)
+$(FAB_IMAGE): $(FAB_INPUT) $(OS_IMAGE)
+	@echo "=== Building Layer 2 --- Interconnect Fabric ==="
+	apptainer build --force $(FAB_IMAGE) $(FAB_INPUT)
 
 $(OS_IMAGE): $(OS_INPUT)
 	@echo "=== Building Layer 1 --- Base OS Image ==="
@@ -50,6 +50,6 @@ $(OS_IMAGE): $(OS_INPUT)
 # Rule to clean up generated images
 clean:
 	@echo "=== Cleaning up generated images ==="
-	rm -f $(OS_IMAGE) $(UCX_IMAGE) $(MPI_IMAGE) $(LIB_IMAGE) $(ET_IMAGE)
+	rm -f $(OS_IMAGE) $(FAB_IMAGE) $(MPI_IMAGE) $(LIB_IMAGE) $(ET_IMAGE)
 
 .PHONY: all clean

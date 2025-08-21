@@ -5,7 +5,7 @@ From: layer3_mpi.sif
 %help
     Einstein Toolkit Container --- Layer 4/5 --- External Libraries
 
-    This layer installs the following external libraries in FALCON_ROOT:
+    This layer installs the following external libraries in LIBS_ROOT:
       - OpenBLAS
       - HDF5
       - FFTW3
@@ -26,98 +26,95 @@ From: layer3_mpi.sif
 %post
     set -e
 
-    cat << 'EOF' >> /env.sh
-
-# Library Versions
-export FALCON_OPENBLAS_VERSION=0.3.30
-export FALCON_HDF5_VERSION=1.14.6
-export FALCON_FFTW_VERSION=3.3.10
-export FALCON_GSL_VERSION=2.8
-
-# Lorene directory
-export HOME_LORENE=${FALCON_ROOT}/Lorene
-
-# Additional versioning required by HDF5
-FALCON_HDF5_VERSION_UND=$(echo "$FALCON_HDF5_VERSION" | tr . _)
-FALCON_HDF5_VERSION_MAJOR_UND=$(echo "$FALCON_HDF5_VERSION_UND" | cut -d_ -f1,2)
-EOF
-
-    # Reload the updated environment
+    # Load environment
     . /env.sh
 
-    ############
-    # OpenBLAS #
-    ############
-    download_unpack_and_cd OpenBLAS-${FALCON_OPENBLAS_VERSION}
+    for CLUSTER in ${AVAILABLE_CLUSTERS}; do
+        module load cluster/${CLUSTER}
 
-    make -j8 DYNAMIC_ARCH=1 USE_OPENMP=1 && make PREFIX=${FALCON_ROOT} install
+        # Additional versioning required by HDF5
+        HDF5_VERSION_UND=$(echo "$HDF5_VERSION" | tr . _)
+        HDF5_VERSION_MAJOR_UND=$(echo "$HDF5_VERSION_UND" | cut -d_ -f1,2)
 
-    clean OpenBLAS-${FALCON_OPENBLAS_VERSION}
+        ########
+        # BLAS #
+        ########
+        download_unpack_and_cd ${BLAS_FLAVOR}-${BLAS_VERSION}
 
-    ########
-    # HDF5 #
-    ########
-    download_unpack_and_cd hdf5-${FALCON_HDF5_VERSION}
+        if [ "$BLAS_FLAVOR" = "openblas" ]; then
+            make -j8 DYNAMIC_ARCH=1 USE_OPENMP=1 && make PREFIX=${LIBS_ROOT} install
+        else
+            echo "Error! Unsupported BLAS flavor: $BLAS_FLAVOR"
+            echo "Currently supported flavors: OpenBLAS"
+            exit 1
+        fi
 
-    ./configure                        \
-        --prefix=${FALCON_ROOT}        \
-        --enable-fortran               \
-        --enable-cxx                   \
-        --enable-shared                \
-        --enable-static                \
-        --with-zlib=yes                \
-        --enable-build-mode=production \
-        CC=mpicc                       \
-        CXX=mpicxx                     \
-        FC=mpif90
-    make -j8 && make install
+        clean ${BLAS_FLAVOR}-${BLAS_VERSION}
 
-    clean hdf5-${FALCON_HDF5_VERSION}
+        ########
+        # HDF5 #
+        ########
+        download_unpack_and_cd hdf5-${HDF5_VERSION}
 
-    ########
-    # FFTW #
-    ########
-    download_unpack_and_cd fftw-${FALCON_FFTW_VERSION}
+        ./configure                        \
+            --prefix=${LIBS_ROOT}          \
+            --enable-fortran               \
+            --enable-cxx                   \
+            --enable-shared                \
+            --enable-static                \
+            --with-zlib=yes                \
+            --enable-build-mode=production \
+            CC=mpicc                       \
+            CXX=mpicxx                     \
+            FC=mpif90
+        make -j8 && make install
 
-    ./configure                 \
-        --prefix=${FALCON_ROOT} \
-        --enable-shared         \
-        --enable-threads        \
-        --enable-openmp         \
-        --enable-sse2           \
-        --enable-avx            \
-        --enable-avx2           \
-        --enable-avx512         \
-        --enable-fma            \
-        --enable-mpi            \
-        CC=mpicc
-    make -j8 && make install
+        clean hdf5-${HDF5_VERSION}
 
-    clean fftw-${FALCON_FFTW_VERSION}
+        ########
+        # FFTW #
+        ########
+        download_unpack_and_cd fftw-${FFTW_VERSION}
 
-    #######
-    # GSL #
-    #######
-    download_unpack_and_cd gsl-${FALCON_GSL_VERSION}
+        ./configure               \
+            --prefix=${LIBS_ROOT} \
+            --enable-shared       \
+            --enable-threads      \
+            --enable-openmp       \
+            --enable-sse2         \
+            --enable-avx          \
+            --enable-avx2         \
+            --enable-avx512       \
+            --enable-fma          \
+            --enable-mpi          \
+            CC=mpicc
+        make -j8 && make install
 
-    ./configure                                       \
-        --prefix=${FALCON_ROOT}                       \
-        --enable-shared                               \
-        --disable-static                              \
-        --with-blas=${FALCON_ROOT}/lib/libopenblas.so \
-        LDFLAGS="-fopenmp"                            \
-        CFLAGS="-O3 -fPIC -march=native -fopenmp"
-    make -j8 && make install
+        clean fftw-${FFTW_VERSION}
 
-    clean gsl-${FALCON_GSL_VERSION}
+        #######
+        # GSL #
+        #######
+        download_unpack_and_cd gsl-${GSL_VERSION}
 
-    ##########
-    # LORENE #
-    ##########
-    download_unpack_and_cd Lorene
-    cd / && mv /Lorene $HOME_LORENE && cd $HOME_LORENE
+        ./configure                                                     \
+            --prefix=${LIBS_ROOT}                                       \
+            --enable-shared                                             \
+            --disable-static                                            \
+            --with-blas=${LIBS_ROOT}/lib/lib${BLAS_FLAVOR}.so \
+            LDFLAGS="-fopenmp"                                          \
+            CFLAGS="-O3 -fPIC -march=native -fopenmp"
+        make -j8 && make install
 
-    echo "# Lorene configuration
+        clean gsl-${GSL_VERSION}
+
+        ##########
+        # LORENE #
+        ##########
+        download_unpack_and_cd Lorene
+        cd / && mv /Lorene $HOME_LORENE && cd $HOME_LORENE
+
+        echo "# Lorene configuration
 CXX        = g++
 F77        = gfortran
 CXXFLAGS   = -O2 -fopenmp -march=native -std=c++17 -rdynamic -DNDEBUG
@@ -130,14 +127,12 @@ MAKEDEPEND = : > \$(df).d
 DEPDIR     = .deps
 FFT_DIR    = FFTW3
 LIB_CXX    = -lfftw3_omp -lgfortran -lstdc++ -lm
-LIB_LAPACK = -lopenblas
-LIB_GSL    = -lgsl -lopenblas
+LIB_LAPACK = -l${BLAS_FLAVOR}
+LIB_GSL    = -lgsl -l${BLAS_FLAVOR}
 LIB_PGPLOT =
 " > local_settings
 
-    make fortran
-    make export -j8
-    make cpp -j8
-
-%environment
-    . /env.sh
+        make fortran
+        make export -j8
+        make cpp -j8
+    done

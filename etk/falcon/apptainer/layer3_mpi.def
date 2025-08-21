@@ -1,12 +1,10 @@
 # File: layer3_mpi.def
 Bootstrap: localimage
-From: layer2_ucx.sif
+From: layer2_fab.sif
 
 %help
     Einstein Toolkit Container --- Layer 3/5 --- MPI
-
-    This layer installs MPI for Falcon, specifically OpenMPI. You will
-    find the installation at FALCON_ROOT.
+    This layer installs MPI libraries.
 
 %labels
     Author(s)  Leo Werneck <wernecklr@gmail.com>
@@ -15,53 +13,71 @@ From: layer2_ucx.sif
 
 %post
     set -e
-    cat << 'EOF' >> /env.sh
 
-# MPI
-export FALCON_MPI_FLAVOR=openmpi
-export FALCON_MPI_VERSION=4.1.6
-EOF
-
-    # Load the updated environment
+    # Load environment
     . /env.sh
 
-    cd /
-    download_unpack_and_cd ${FALCON_MPI_FLAVOR}-${FALCON_MPI_VERSION}
+    for CLUSTER in ${AVAILABLE_CLUSTERS}; do
+        module load cluster/${CLUSTER}
 
-    ./configure                   \
-        --prefix=${FALCON_ROOT}   \
-        --with-ucx=${FALCON_ROOT} \
-        --with-verbs              \
-        --with-hwloc=/usr         \
-        --without-hwloc-internal
-    make -j8 && make install
+        cd /
+        download_unpack_and_cd ${MPI_FLAVOR}-${MPI_VERSION}
 
-    clean ${FALCON_MPI_FLAVOR}-${FALCON_MPI_VERSION}
+        ./configure                   \
+            --prefix=${LIBS_ROOT}   \
+            --with-ucx=${LIBS_ROOT} \
+            --with-verbs              \
+            --with-hwloc=/usr         \
+            --without-hwloc-internal
+        make -j8 && make install
 
-%test
-    echo "Testing mpi install"
-    for tool in \
-            ${FALCON_BIN}/mpicc   \
-            ${FALCON_BIN}/mpicxx  \
-            ${FALCON_BIN}/mpifort \
-            mpicc mpicxx mpifort; do
+        clean ${MPI_FLAVOR}-${MPI_VERSION}
 
-        if TOOL=$(command -v "$tool" 2>/dev/null); then
-            echo "Success! Found $tool in $TOOL"
-        else
-            echo "Error! Could not find $tool"
-            exit 1
+        if [ "$MPI_FLAVOR" = "openmpi" ]; then
+            if ! pkg-config --exists ompi; then
+                echo "Error! pkg-config cannot find ompi"
+                exit 1
+            fi
+
+            pcdir=$(pkg-config --variable=pcfiledir ompi 2>/dev/null)
+            ln -s ${pcdir}/ompi.pc      ${pcdir}/mpi.pc
+            ln -s ${pcdir}/ompi-c.pc    ${pcdir}/mpi-c.pc
+            ln -s ${pcdir}/ompi-cxx.pc  ${pcdir}/mpi-cxx.pc
+            ln -s ${pcdir}/ompi-fort.pc ${pcdir}/mpi-fort.pc
         fi
 
+        module purge
     done
 
-    printf "Testing if pkg-config can find ompi: "
-    if ! pkg-config --exists ompi; then
-        echo "no!"
-        echo "Error: pkg-config cannot find OpenMPI"
-        exit 1
-    fi
-    echo "yes!"
-
-%environment
+%test
+    # Load environment
     . /env.sh
+
+    for CLUSTER in ${AVAILABLE_CLUSTERS}; do
+        module load cluster/${CLUSTER}
+
+        echo "Testing mpi install"
+        for tool in ${LIBS_BIN}/mpicc   \
+                    ${LIBS_BIN}/mpicxx  \
+                    ${LIBS_BIN}/mpifort \
+                    mpicc mpicxx mpifort; do
+
+            if TOOL=$(command -v "$tool" 2>/dev/null); then
+                echo "Success! Found $tool in $TOOL"
+            else
+                echo "Error! Could not find $tool"
+                exit 1
+            fi
+
+        done
+
+        printf "Testing if pkg-config can find MPI: "
+        if ! pkg-config --exists mpi; then
+            echo "no!"
+            echo "Error: pkg-config cannot find MPI"
+            exit 1
+        fi
+        echo "yes!"
+
+        module purge
+    done
