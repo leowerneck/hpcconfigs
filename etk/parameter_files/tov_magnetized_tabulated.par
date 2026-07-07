@@ -1,0 +1,320 @@
+# .-------------------------------------------------.
+# | Baikal+IllinoisGRMHD Tabulated SFHo EOS TOV run |
+# .-------------------------------------------------.
+#
+#-------------Thorn activation-------------
+ActiveThorns = "
+
+  ADMBase
+  ADMCoupling
+  ADMMacros
+  AEILocalInterp
+  Baikal
+  Boundary
+  Carpet
+  CarpetInterp
+  CarpetIOASCII
+  CarpetIOBasic
+  CarpetIOHDF5
+  CarpetIOScalar
+  CarpetLib
+  CarpetReduce
+  CarpetRegrid2
+  CarpetSlab
+  CartGrid3D
+  CoordBase
+  CoordGauge
+  GenericFD
+  GSL
+  HDF5
+  HydroBase
+  InitBase
+  IOUtil
+  LORENE
+  LocalInterp
+  LocalReduce
+  LoopControl
+  MoL
+  MPI
+  NewRad
+  Seed_Magnetic_Fields
+  Slab
+  smallbPoynET
+  SpaceMask
+  StaticConformal
+  SummationByParts
+  SymBase
+  TerminationTrigger
+  Time
+  TOVola
+  TmunuBase
+  Vectors
+
+  GRHayLib
+  GRHayLID
+  IllinoisGRMHD
+
+"
+
+#---------Cactus---------
+Cactus::cctk_run_title     = "Baikal_IGM_SFHo_TOV"
+Cactus::cctk_full_warnings = "yes"
+Cactus::terminate          = "time"
+Cactus::cctk_final_time    = 2090 #more or less 10 ms # divide by ~203 to get ms
+
+#---------ADMBase---------
+ADMBase::evolution_method         = "Baikal"
+ADMBase::lapse_evolution_method   = "Baikal"
+ADMBase::shift_evolution_method   = "Baikal"
+ADMBase::dtlapse_evolution_method = "Baikal"
+ADMBase::dtshift_evolution_method = "Baikal"
+ADMBase::initial_data             = "TOVola"
+ADMBase::initial_lapse            = "TOVola"
+ADMBase::initial_shift            = "TOVola"
+ADMBase::initial_dtlapse          = "zero"
+ADMBase::initial_dtshift          = "zero"
+ADMBase::metric_type              = "physical"
+ADMBase::metric_timelevels        = 3
+ADMBase::lapse_timelevels         = 3
+ADMBase::shift_timelevels         = 3
+
+#---------ADMMacros---------
+ADMMacros::spatial_order = 4
+
+#---------Baikal---------
+Baikal::diss_strength = 0.2
+Baikal::eta           = 1.0/1.4
+
+#---------Boundary---------
+Boundary::radpower = 2
+
+#---------Carpet---------
+Carpet::init_fill_timelevels     = "yes"
+Carpet::domain_from_coordbase    = "yes"
+Carpet::use_buffer_zones         = "yes"
+Carpet::enable_all_storage       = "no"
+Carpet::check_for_poison         = "no"
+Carpet::init_3_timelevels        = "no"
+Carpet::poison_new_timelevels    = "yes"
+Carpet::storage_verbose          = "no"
+Carpet::verbose                  = "no"
+Carpet::veryverbose              = "no"
+Carpet::convergence_level        = 0
+Carpet::ghost_size               = 3
+Carpet::output_timers_every      = 512
+Carpet::prolongation_order_space = 5
+Carpet::prolongation_order_time  = 2
+Carpet::max_refinement_levels    = 5 # <- This will set the regrid/output frequency
+#Carpet::time_refinement_factors  = "[1,2,4,8,16]"
+
+#---------CarpetInterp---------
+CarpetInterp::check_tree_search = "no"
+CarpetInterp::tree_search       = "yes"
+
+#---------CarpetLib---------
+CarpetLib::support_staggered_operators = "yes"
+CarpetLib::combine_recompose           = "no"
+CarpetLib::print_memstats_every        = -1
+
+#---------CarpetRegrid2---------
+CarpetRegrid2::freeze_unaligned_levels = "yes"
+CarpetRegrid2::symmetry_rotating180    = "no"
+CarpetRegrid2::verbose                 = "no"
+CarpetRegrid2::num_centres             = 1
+
+# Grid #1: centered at "left" star
+# The values below are set to match Spritz
+CarpetRegrid2::num_levels_1 = 5
+CarpetRegrid2::radius_1[1]  = 72
+CarpetRegrid2::radius_1[2]  = 36
+CarpetRegrid2::radius_1[3]  = 18
+CarpetRegrid2::radius_1[4]  = 9
+
+#---------CartGrid3D---------
+CartGrid3D::avoid_origin = "no"
+CartGrid3D::type         = "CoordBase"
+
+#---------CoordBase---------
+CoordBase::boundary_size_x_lower     = 3
+CoordBase::boundary_size_y_lower     = 3
+CoordBase::boundary_size_z_lower     = 3
+CoordBase::boundary_size_x_upper     = 3
+CoordBase::boundary_size_y_upper     = 3
+CoordBase::boundary_size_z_upper     = 3
+CoordBase::domainsize                = "minmax"
+CoordBase::spacing                   = "gridspacing"
+
+# The values below are set to match Spritz
+CoordBase::dx   = 3.0
+CoordBase::dy   = CoordBase::dx
+CoordBase::dz   = CoordBase::dx
+CoordBase::xmax = 144
+CoordBase::xmin = -CoordBase::xmax
+CoordBase::ymax = CoordBase::xmax
+CoordBase::zmax = CoordBase::xmax
+CoordBase::ymin = CoordBase::xmin
+CoordBase::zmin = CoordBase::xmin
+
+#---------HydroBase---------
+HydroBase::initial_hydro       = "TOVola"
+HydroBase::initial_Y_e         = "GRHayLID"
+HydroBase::initial_temperature = "GRHayLID"
+HydroBase::initial_entropy     = "GRHayLID"
+HydroBase::initial_Bvec        = "zero"
+HydroBase::initial_Avec        = "zero"
+HydroBase::initial_Aphi        = "zero"
+HydroBase::timelevels          = 1
+HydroBase::prolongation_type   = "none"
+
+#---------IllinoisGRMHD---------
+IllinoisGRMHD::Convert_to_HydroBase_every = 1
+
+#---------smallbPoynET---------
+smallbPoynET::smallbPoynET_compute_every = 1
+
+#---------GRHayLib---------
+GRHayLib::EOS_type                    = "tabulated"
+GRHayLib::EOS_tablepath               = "sly4.h5"
+GRHayLib::evolve_temperature          = yes
+GRHayLib::evolve_entropy              = yes
+GRHayLib::con2prim_routine            = "Palenzuela1D"
+GRHayLib::rho_b_atm                   = 1e-12
+GRHayLib::rho_b_min                   = GRHayLib::rho_b_atm
+GRHayLib::rho_b_max                   = 0.004
+GRHayLib::Y_e_atm                     = 0.5
+GRHayLib::Y_e_max                     = GRHayLib::Y_e_atm
+GRHayLib::T_atm                       = 1e-2
+GRHayLib::T_min                       = GRHayLib::T_atm
+GRHayLib::T_max                       = 90
+GRHayLib::Psi6threshold               = 60
+GRHayLib::Lorenz_damping_factor       = 0.1
+GRHayLib::calc_primitive_guess        = yes
+
+#---------GRHayLID---------
+GRHayLID::impose_beta_equilibrium = "yes"
+GRHayLID::beq_temperature         = GRHayLib::T_atm
+
+#---------InitBase---------
+InitBase::initial_data_setup_method = "init_some_levels"
+
+#---------MoL---------
+MoL::run_MoL_PostStep_in_Post_Recover_Variables = "no"
+MoL::ODE_Method                                 = "rk4"
+MoL::MoL_Intermediate_Steps                     = 4
+MoL::MoL_Num_Scratch_Levels                     = 1
+
+#---------Seed_Magnetic_Fields---------
+Seed_Magnetic_Fields::A_b   = 3.74
+Seed_Magnetic_Fields::P_cut = 0.00000967677
+
+#---------SpaceMask---------
+SpaceMask::use_mask = "yes"
+
+#---------TerminationTrigger---------
+TerminationTrigger::create_termination_file = "yes"
+TerminationTrigger::termination_from_file   = "yes"
+TerminationTrigger::termination_file        = "TERMINATE"
+TerminationTrigger::max_walltime            = 48
+TerminationTrigger::on_remaining_walltime   = 60  # IN MINUTES
+
+#---------Time---------
+Time::dtfac = 0.5 # == 0.5 (Courant factor) * (1/2)^N_repeats (from time_refinement_factors above)
+
+#---------TOVola---------
+TOVola::TOVola_EOS_type               = "Tabulated"
+TOVola::TOVola_central_baryon_density = 1.45e-3
+
+#---------TmunuBase---------
+TmunuBase::stress_energy_storage = yes
+TmunuBase::stress_energy_at_RHS  = yes
+TmunuBase::timelevels            =  1
+TmunuBase::prolongation_type     = none
+
+# .----------------------.
+# | Output configuration |
+# .----------------------.
+
+#---------IOUtil---------
+IOUtil::out_dir                         = "output_directory"
+IOUtil::checkpoint_dir                  = IOUtil::out_dir + "/checkpoints"
+IOUtil::recover_dir                     = "output_directory_01/checkpoints"
+IOUtil::checkpoint_keep                 = 1
+IOUtil::checkpoint_on_terminate         = "yes"
+IOUtil::out_fileinfo                    = "none"
+IOUtil::parfile_write                   = "generate"
+IOUtil::recover                         = "autoprobe"
+IOUtil::checkpoint_every_walltime_hours = 12
+
+#---------CarpetIOASCII---------
+CarpetIOASCII::one_file_per_group = "no"
+CarpetIOASCII::out0D_every        = 2**Carpet::max_refinement_levels
+CarpetIOASCII::out0D_vars         = "
+  Carpet::physical_time_per_hour
+"
+
+CarpetIOASCII::out1D_d     = "no"
+CarpetIOASCII::out1D_dir   = IOUtil::out_dir + "/ascii_1d"
+CarpetIOASCII::out1D_every = 2**(Carpet::max_refinement_levels+1)
+CarpetIOASCII::out1D_vars  = "
+  HydroBase::rho
+  HydroBase::Y_e
+  HydroBase::temperature
+  HydroBase::eps
+  HydroBase::entropy
+  HydroBase::press
+  ADMBase::lapse
+  Baikal::HGF
+  Baikal::MU0GF
+  Baikal::MU1GF
+  Baikal::MU2GF
+"
+
+CarpetIOASCII::out2D_dir   = IOUtil::out_dir + "/ascii_2d"
+CarpetIOASCII::out2D_every = 2**(Carpet::max_refinement_levels+2)
+CarpetIOASCII::out2D_vars  = "
+  HydroBase::rho
+  HydroBase::Y_e
+  HydroBase::temperature
+  HydroBase::eps
+  HydroBase::entropy
+  HydroBase::press
+  Baikal::HGF
+  Baikal::MU0GF
+  Baikal::MU1GF
+  Baikal::MU2GF
+"
+
+CarpetIOASCII::out3D_dir   = IOUtil::out_dir + "/ascii_3d"
+CarpetIOASCII::out3D_every = 2**(Carpet::max_refinement_levels+3)
+CarpetIOASCII::out3D_vars  = "
+  IllinoisGRMHD::c2p_its_gf{ refinement_levels = { 4 } }
+  IllinoisGRMHD::c2p_error_gf{ refinement_levels = { 4 } }
+"
+
+# Parameters of thorn CarpetIOBasic (implementing IOBasic)
+CarpetIOBasic::outInfo_every      = 32
+CarpetIOBasic::outInfo_reductions = "maximum"
+CarpetIOBasic::outInfo_vars       = "
+  Carpet::physical_time_per_hour
+  HydroBase::rho
+  Baikal::cfGF
+"
+
+#---------CarpetIOHDF5---------
+CarpetIOHDF5::checkpoint         = "yes"
+CarpetIOHDF5::compression_level  = 0
+
+#---------CarpetIOScalar---------
+CarpetIOScalar::one_file_per_group   = "no"
+CarpetIOScalar::outScalar_every      = 2**Carpet::max_refinement_levels
+CarpetIOScalar::outScalar_reductions = "minimum maximum average"
+CarpetIOScalar::outScalar_vars       = "
+  ADMBase::alp
+  HydroBase::rho
+  HydroBase::Y_e
+  HydroBase::temperature
+  HydroBase::eps
+  HydroBase::entropy
+  HydroBase::press
+  smallbPoynET::smallb2
+"
