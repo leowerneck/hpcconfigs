@@ -60,7 +60,13 @@ HWLOC_ENV_ROOT=$LOCAL_ROOT
 GSL_ENV_ROOT=$LOCAL_ROOT
 OPENBLAS_ENV_ROOT=$LOCAL_ROOT
 
+# Download Lorene, if not found
 export HOME_LORENE=${ET_WORK_DIR}/Lorene
+if [[ ! -d $HOME_LORENE ]]; then
+    wget https://github.com/leowerneck/apptainer_libs/raw/refs/heads/main/Lorene.tar.gz
+    tar xzvf Lorene.tar.gz
+    rm -f Lorene.tar.gz
+fi
 
 # Generate ET configuration file
 cat << EOF > "${ET_WORK_DIR}"/et.cfg
