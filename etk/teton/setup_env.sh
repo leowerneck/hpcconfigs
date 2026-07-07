@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 # Title    : Teton Environment for ET/Lorene
 # Author   : Leo Werneck
 # Date     : 2026-02-19
@@ -24,7 +22,7 @@ get_module_path() {
   /^prepend_path{"LD_LIBRARY_PATH"/ {sub(/\/lib$/, "", $4); print $4; exit}')
   if [ ! -d "$path" ]; then
     echo "Error: could not find path for module $1"
-    exit 1
+    return 1
   fi
   echo "$path"
 }
@@ -37,7 +35,7 @@ This directory should contain the installation of the following libraries:
   - gsl
   - openblas
 "
-    exit 1
+    return 1
 fi
 
 if [[ -z ${ET_WORK_DIR:-} ]]; then
@@ -46,7 +44,7 @@ ET_WORK_DIR environment variable must be set.
 This directory represents the working directory where the ET will reside. It
 is normally set to somewhere in /scratch/\${USER}.
 "
-    exit 1
+    return 1
 fi
 
 # Local module directory
