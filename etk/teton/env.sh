@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -e
+
 # Title    : Teton Environment for ET/Lorene
 # Author   : Leo Werneck
 # Date     : 2026-02-19
@@ -19,14 +22,14 @@ get_module_path() {
   /^prepend_path{"LIBRARY_PATH"/ {sub(/\/lib$/, "", $4); print $4; exit}
   /^prepend_path{"CPATH"/ {sub(/\/include$/, "", $4); print $4; exit}
   /^prepend_path{"LD_LIBRARY_PATH"/ {sub(/\/lib$/, "", $4); print $4; exit}')
-  if [ ! -d $path ]; then
+  if [ ! -d "$path" ]; then
     echo "Error: could not find path for module $1"
     exit 1
   fi
-  echo $path
+  echo "$path"
 }
 
-if [[ ! -v LOCAL_ROOT ]]; then
+if [[ -z ${LOCAL_ROOT:-} ]]; then
     echo "
 LOCAL_ROOT environment variable must be set.
 This directory should contain the installation of the following libraries:
@@ -37,7 +40,7 @@ This directory should contain the installation of the following libraries:
     exit 1
 fi
 
-if [[ ! -v ET_WORK_DIR ]]; then
+if [[ -z ${ET_WORK_DIR:-} ]]; then
     echo "
 ET_WORK_DIR environment variable must be set.
 This directory represents the working directory where the ET will reside. It
@@ -60,7 +63,7 @@ OPENBLAS_ENV_ROOT=$LOCAL_ROOT
 export HOME_LORENE=${ET_WORK_DIR}/Lorene
 
 # Generate ET configuration file
-cat << EOF > ${ET_WORK_DIR}/et.cfg
+cat << EOF > "${ET_WORK_DIR}"/et.cfg
 # These options expect you to have ran the following command:
 # module load                    \\
 #   gcc/13.4.0-gcc11-5dyu        \\
@@ -179,7 +182,7 @@ LORENE_DIR = $HOME_LORENE
 EOF
 
 # Generate LORENE local settings
-cat << EOF > ${HOME_LORENE}/local_settings
+cat << EOF > "${HOME_LORENE}"/local_settings
 GSL_DIR  = ${GSL_ENV_ROOT}
 FFTW_DIR = ${FFTW_ENV_ROOT}
 
