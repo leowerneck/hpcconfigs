@@ -1,3 +1,4 @@
+#!/bin/bash
 # Title    : Teton Environment for ET/Lorene
 # Author   : Leo Werneck
 # Date     : 2026-02-19
@@ -25,8 +26,27 @@ get_module_path() {
   echo $path
 }
 
+if [[ ! -v LOCAL_ROOT ]]; then
+    echo "
+LOCAL_ROOT environment variable must be set.
+This directory should contain the installation of the following libraries:
+  - hwloc
+  - gsl
+  - openblas
+"
+    exit 1
+fi
+
+if [[ ! -v ET_WORK_DIR ]]; then
+    echo "
+ET_WORK_DIR environment variable must be set.
+This directory represents the working directory where the ET will reside. It
+is normally set to somewhere in /scratch/\${USER}.
+"
+    exit 1
+fi
+
 # Local module directory
-LOCAL_ROOT=$YOUR_LOCAL_DIR
 SZIP_LIB_DIR=/apps/spack/opt/gcc-13.4.0/libaec-1.1.5-6ljsh6eimvuvw26cjuqtrzemvkorexjp/lib64
 
 # Adjust these manually if module isn't available
@@ -37,7 +57,6 @@ HWLOC_ENV_ROOT=$LOCAL_ROOT
 GSL_ENV_ROOT=$LOCAL_ROOT
 OPENBLAS_ENV_ROOT=$LOCAL_ROOT
 
-export ET_WORK_DIR=$YOUR_ET_WORK_DIR
 export HOME_LORENE=${ET_WORK_DIR}/Lorene
 
 # Generate ET configuration file
